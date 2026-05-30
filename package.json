@@ -1,0 +1,13 @@
+{
+  "name": "miniprogram-recipe",
+  "version": "1.0.0",
+  "description": "划算小厨 - 微信小程序",
+  "scripts": {
+    "preview": "node scripts/preview.js",
+    "upload": "node scripts/upload.js",
+    "login": "node scripts/login.js"
+  },
+  "devDependencies": {
+    "miniprogram-ci": "^1.9.17"
+  }
+}

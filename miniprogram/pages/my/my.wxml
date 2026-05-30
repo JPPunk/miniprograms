@@ -1,0 +1,108 @@
+<view class="container">
+  <view class="user-section">
+    <view class="avatar-placeholder">
+      <text class="avatar-text">{{userInfo.avatar || '👤'}}</text>
+    </view>
+    <view class="user-info">
+      <text class="nickname">{{userInfo.nickName}}</text>
+      <text class="user-id">ID: 10086</text>
+    </view>
+    <view class="notification-bell" bindtap="goToNotificationList">
+      <text class="bell-icon">🔔</text>
+      <view class="unread-badge" wx:if="{{unreadCount > 0}}">{{unreadCount > 99 ? '99+' : unreadCount}}</view>
+    </view>
+  </view>
+
+  <view class="stats-section">
+    <view class="stat-item">
+      <text class="stat-num">{{stats.recipeCount}}</text>
+      <text class="stat-label">菜谱</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num">{{stats.favoriteCount}}</text>
+      <text class="stat-label">收藏</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num">{{stats.likeCount}}</text>
+      <text class="stat-label">获赞</text>
+    </view>
+  </view>
+
+  <view class="tabs-section">
+    <view class="tab-btn {{currentTab === 'recipes' ? 'active' : ''}}" bindtap="onTabChange" data-tab="recipes">
+      � 我的菜谱
+    </view>
+    <view class="tab-btn {{currentTab === 'favorites' ? 'active' : ''}}" bindtap="onTabChange" data-tab="favorites">
+      ❤️ 我的收藏
+    </view>
+    <view class="tab-btn {{currentTab === 'history' ? 'active' : ''}}" bindtap="onTabChange" data-tab="history">
+      🕐 浏览历史
+    </view>
+  </view>
+
+  <view class="content-section">
+    <view class="empty-state" wx:if="{{currentTab === 'recipes' && myRecipes.length === 0}}">
+      <text class="empty-icon">📖</text>
+      <text class="empty-text">暂无菜谱</text>
+      <text class="empty-hint">快去上传第一个菜谱吧！</text>
+    </view>
+
+    <view class="empty-state" wx:if="{{currentTab === 'favorites' && favorites.length === 0}}">
+      <text class="empty-icon">❤️</text>
+      <text class="empty-text">暂无收藏</text>
+      <text class="empty-hint">去点赞喜欢的菜谱吧！</text>
+    </view>
+
+    <view class="empty-state" wx:if="{{currentTab === 'history' && history.length === 0}}">
+      <text class="empty-icon">🕐</text>
+      <text class="empty-text">暂无浏览记录</text>
+      <text class="empty-hint">去看看有什么好吃的吧！</text>
+    </view>
+
+    <view class="recipe-list" wx:if="{{currentTab === 'recipes'}}">
+      <view class="recipe-item" wx:for="{{myRecipes}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
+        <view class="recipe-emoji">{{item.emoji}}</view>
+        <view class="recipe-info">
+          <text class="recipe-name">{{item.name}}</text>
+          <text class="recipe-meta">{{item.createTime}} · ❤️ {{item.likes}}</text>
+        </view>
+        <text class="recipe-price">¥{{item.totalPrice}}</text>
+      </view>
+    </view>
+
+    <view class="recipe-list" wx:if="{{currentTab === 'favorites'}}">
+      <view class="recipe-item" wx:for="{{favorites}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
+        <view class="recipe-emoji">{{item.emoji}}</view>
+        <view class="recipe-info">
+          <text class="recipe-name">{{item.name}}</text>
+          <text class="recipe-meta">by {{item.authorName}} · ❤️ {{item.likes}}</text>
+        </view>
+        <text class="recipe-price">¥{{item.totalPrice}}</text>
+      </view>
+    </view>
+
+    <view class="recipe-list" wx:if="{{currentTab === 'history'}}">
+      <view class="recipe-item" wx:for="{{history}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
+        <view class="recipe-emoji">{{item.emoji}}</view>
+        <view class="recipe-info">
+          <text class="recipe-name">{{item.name}}</text>
+          <text class="recipe-meta">by {{item.authorName}} · ❤️ {{item.likes}}</text>
+        </view>
+        <text class="recipe-price">¥{{item.totalPrice}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="settings-section">
+    <view class="section-title">⚙️ 设置</view>
+    <view class="settings-list">
+      <view class="setting-item" bindtap="onMenuTap" data-id="about">
+        <text class="setting-icon">ℹ️</text>
+        <text class="setting-title">关于小程序</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+  </view>
+</view>

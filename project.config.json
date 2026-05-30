@@ -1,0 +1,25 @@
+{
+  "miniprogramRoot": "miniprogram/",
+  "projectname": "miniprogram-recipe",
+  "compileType": "miniprogram",
+  "libVersion": "2.2.5",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minified": true,
+    "newFeature": true,
+    "coverView": true,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false
+  },
+  "cloudfunctionRoot": "cloud/",
+  "condition": {
+    "miniprogram": {
+      "list": []
+    }
+  }
+}

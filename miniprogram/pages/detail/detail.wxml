@@ -1,0 +1,92 @@
+<view class="container">
+  <view class="detail-card" wx:if="{{recipe}}">
+    <view class="cover-placeholder">
+      <text class="cover-emoji">{{recipe.emoji}}</text>
+    </view>
+
+    <view class="content">
+      <view class="header-section">
+        <text class="recipe-name">{{recipe.name}}</text>
+        <view class="author-row">
+          <text class="author">👨‍🍳 {{recipe.authorName}}</text>
+          <text class="time">{{recipe.createTime}}</text>
+        </view>
+        <view class="price-row">
+          <text class="total-price-label">参考价格</text>
+          <text class="total-price-value">¥{{recipe.totalPrice}}</text>
+        </view>
+      </view>
+
+      <view class="section" wx:if="{{recipe.dishImages && recipe.dishImages.length > 0}}">
+        <text class="section-title">�️ 成品图片</text>
+        <scroll-view class="images-scroll" scroll-x="true">
+          <view class="dish-images-list">
+            <image
+              wx:for="{{recipe.dishImages}}"
+              wx:key="index"
+              src="{{item}}"
+              mode="aspectFill"
+              class="dish-image-item"
+            />
+          </view>
+        </scroll-view>
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="section">
+        <text class="section-title">🥗 食材明细</text>
+        <view class="ingredients-list">
+          <view class="ingredient-item" wx:for="{{recipe.ingredientItems}}" wx:key="index">
+            <view class="ingredient-left">
+              <view class="ingredient-info">
+                <text class="ingredient-name">{{item.name}}</text>
+                <text class="ingredient-specs">{{item.qty}} {{item.unit}}</text>
+              </view>
+              <text class="ingredient-price">¥{{item.price}}</text>
+            </view>
+            <view class="ingredient-image" wx:if="{{item.image}}">
+              <image src="{{item.image}}" mode="aspectFill" class="ingredient-thumb" />
+            </view>
+          </view>
+        </view>
+        <view class="ingredients-total">
+          <text class="total-text">食材总价</text>
+          <text class="total-value">¥{{recipe.totalPrice}}</text>
+        </view>
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="section">
+        <text class="section-title">👨‍🍳 做法步骤</text>
+        <view class="steps-list">
+          <view class="step-item" wx:for="{{recipe.steps}}" wx:key="index">
+            <view class="step-main">
+              <view class="step-number">{{index + 1}}</view>
+              <view class="step-text">
+                <text>{{item.content}}</text>
+              </view>
+            </view>
+            <view class="step-image" wx:if="{{item.image}}">
+              <image src="{{item.image}}" mode="aspectFill" class="step-thumb" />
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="like-section">
+        <button class="like-btn {{hasLiked ? 'liked' : ''}}" bindtap="toggleLike">
+          <text class="like-icon">{{hasLiked ? '❤️' : '🤍'}}</text>
+          <text class="like-count">{{recipe.likes}}</text>
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

@@ -1,0 +1,203 @@
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.header {
+  background: linear-gradient(135deg, #ff6b35, #ff8c5a);
+  padding: 40rpx 30rpx 30rpx;
+  text-align: center;
+}
+
+.title {
+  display: block;
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 8rpx;
+}
+
+.subtitle {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.tabs-bar {
+  display: flex;
+  background: #ffffff;
+  padding: 20rpx 10rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10rpx 0;
+  position: relative;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50rpx;
+  height: 4rpx;
+  background: #ff6b35;
+  border-radius: 2rpx;
+}
+
+.tab-icon {
+  font-size: 36rpx;
+  margin-bottom: 4rpx;
+}
+
+.tab-name {
+  font-size: 22rpx;
+  color: #666;
+}
+
+.tab-item.active .tab-name {
+  color: #ff6b35;
+  font-weight: bold;
+}
+
+.content-area {
+  padding: 20rpx 30rpx;
+}
+
+.ranking-section {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.title-icon {
+  font-size: 40rpx;
+  margin-right: 12rpx;
+}
+
+.title-text {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 16rpx;
+}
+
+.title-hint {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.recipe-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background: #fafafa;
+  border-radius: 16rpx;
+}
+
+.recipe-item.top-1 {
+  background: linear-gradient(135deg, #fff5f0, #fff);
+  border: 2rpx solid #ffd4c4;
+}
+
+.recipe-item.top-2 {
+  background: linear-gradient(135deg, #f8f8f8, #fff);
+  border: 2rpx solid #e8e8e8;
+}
+
+.recipe-item.top-3 {
+  background: linear-gradient(135deg, #f5f5f5, #fff);
+  border: 2rpx solid #ddd;
+}
+
+.rank-badge {
+  width: 60rpx;
+  font-size: 40rpx;
+  text-align: center;
+}
+
+.rank-num {
+  width: 60rpx;
+  font-size: 28rpx;
+  color: #999;
+  text-align: center;
+  font-weight: 500;
+}
+
+.recipe-emoji {
+  font-size: 50rpx;
+  margin-right: 20rpx;
+}
+
+.recipe-info {
+  flex: 1;
+}
+
+.recipe-name {
+  display: block;
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.recipe-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.meta-item {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.recipe-arrow {
+  font-size: 40rpx;
+  color: #cccccc;
+  padding: 0 10rpx;
+}
+
+.expand-btn {
+  text-align: center;
+  padding: 24rpx;
+  margin-top: 16rpx;
+}
+
+.expand-btn view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #ff6b35;
+}
+
+.expand-btn .arrow {
+  margin-left: 8rpx;
+  font-size: 22rpx;
+}
+
+.loading {
+  text-align: center;
+  padding: 60rpx;
+  color: #999;
+  font-size: 28rpx;
+}

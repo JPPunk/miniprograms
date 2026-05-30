@@ -1,0 +1,248 @@
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #ff6b35, #ff8c5a);
+  padding: 60rpx 40rpx 40rpx;
+  position: relative;
+}
+
+.avatar-placeholder {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 30rpx;
+}
+
+.avatar-text {
+  font-size: 60rpx;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.nickname {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 8rpx;
+}
+
+.user-id {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.notification-bell {
+  position: relative;
+  padding: 10rpx;
+}
+
+.bell-icon {
+  font-size: 48rpx;
+}
+
+.unread-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #ff4d4f;
+  color: #fff;
+  font-size: 20rpx;
+  min-width: 36rpx;
+  height: 36rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8rpx;
+}
+
+.stats-section {
+  display: flex;
+  background: #ffffff;
+  padding: 30rpx 0;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-num {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #ff6b35;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 60rpx;
+  background: #f0f0f0;
+  margin-top: 10rpx;
+}
+
+.tabs-section {
+  display: flex;
+  background: #ffffff;
+  padding: 20rpx 0;
+  margin-bottom: 20rpx;
+}
+
+.tab-btn {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  color: #666;
+  padding: 16rpx 0;
+  position: relative;
+}
+
+.tab-btn.active {
+  color: #ff6b35;
+  font-weight: bold;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 4rpx;
+  background: #ff6b35;
+  border-radius: 2rpx;
+}
+
+.content-section {
+  background: #ffffff;
+  min-height: 400rpx;
+  padding: 20rpx 30rpx;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80rpx 0;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 100rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  display: block;
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+
+.empty-hint {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.recipe-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  background: #fafafa;
+  border-radius: 16rpx;
+}
+
+.recipe-emoji {
+  font-size: 60rpx;
+  margin-right: 24rpx;
+}
+
+.recipe-info {
+  flex: 1;
+}
+
+.recipe-name {
+  display: block;
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.recipe-meta {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.recipe-price {
+  font-size: 32rpx;
+  color: #ff6b35;
+  font-weight: bold;
+}
+
+.settings-section {
+  background: #ffffff;
+  margin-top: 20rpx;
+  padding: 30rpx;
+}
+
+.section-title {
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 20rpx;
+  font-weight: 500;
+}
+
+.settings-list {
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+}
+
+.setting-title {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.setting-arrow {
+  font-size: 36rpx;
+  color: #cccccc;
+}
