@@ -18,3 +18,12 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Coverage
+coverage/
+
+# Local config overrides
+config/local.js
+
+# GitHub Actions artifacts (local run)
+preview-qr.png

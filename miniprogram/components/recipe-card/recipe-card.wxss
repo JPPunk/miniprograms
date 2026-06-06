@@ -1,0 +1,68 @@
+.recipe-card {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  background: var(--bg-card, #fafafa);
+  border-radius: var(--radius-lg, 16rpx);
+  transition: background 0.2s ease;
+}
+
+.recipe-card:active {
+  background: var(--bg-pressed, #f0f0f0);
+}
+
+.recipe-card.top-rank {
+  background: linear-gradient(135deg, var(--primary-light, #fff5f0), #ffffff);
+  border: 2rpx solid var(--primary-lighter, #ffd4c4);
+}
+
+.rank-badge {
+  width: 60rpx;
+  font-size: 40rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.rank-num {
+  width: 60rpx;
+  font-size: 28rpx;
+  color: var(--text-tertiary, #999999);
+  text-align: center;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.recipe-emoji {
+  font-size: 50rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.recipe-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.recipe-name {
+  display: block;
+  font-size: 30rpx;
+  color: var(--text-primary, #333333);
+  font-weight: 500;
+  margin-bottom: 8rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recipe-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.recipe-arrow {
+  font-size: 40rpx;
+  color: var(--text-disabled, #cccccc);
+  padding: 0 10rpx;
+  flex-shrink: 0;
+}

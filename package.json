@@ -3,11 +3,34 @@
   "version": "1.0.0",
   "description": "划算小厨 - 微信小程序",
   "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
     "preview": "node scripts/preview.js",
     "upload": "node scripts/upload.js",
     "login": "node scripts/login.js"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
     "miniprogram-ci": "^1.9.17"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {},
+    "setupFilesAfterEnv": [
+      "./jest.setup.js"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "miniprogram/services/**/*.js",
+      "miniprogram/utils/**/*.js"
+    ],
+    "coverageDirectory": "coverage"
   }
 }

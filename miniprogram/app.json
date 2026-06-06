@@ -33,5 +33,10 @@
     ]
   },
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "usingComponents": {
+    "empty-state": "./components/empty-state/empty-state",
+    "loading-state": "./components/loading-state/loading-state",
+    "recipe-card": "./components/recipe-card/recipe-card"
+  }
 }

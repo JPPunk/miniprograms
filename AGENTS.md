@@ -13,11 +13,11 @@
 ## 项目信息
 
 - 项目名称：划算小厨（微信小程序）
-- 仓库地址：https://gitee.com/jplu/miniprogram
+- 仓库地址：https://github.com/JPPunk/miniprograms
 - 技术栈：微信小程序 + miniprogram-ci
 
 ## Git 规范
 
-- 远程仓库：git@gitee.com:jplu/miniprogram.git
+- 远程仓库：git@github.com:JPPunk/miniprograms.git
 - 主分支：master
 - 提交信息使用中文，格式：`类型: 描述`，如 `feat: 添加新页面`

@@ -21,6 +21,7 @@
 
 - 默认展开前 3 条，点击可展开完整榜单
 - 点击任意菜谱进入详情页
+- 首页采用**按需懒加载**，切换 tab 时才加载对应榜单数据
 
 ### 📝 上传菜谱
 支持创建完整的菜谱档案：
@@ -58,8 +59,9 @@
 | 层级 | 技术 |
 |---|---|
 | 框架 | 原生微信小程序 |
-| 数据存储 | `wx.storage`（本地存储）|
-| CI 工具 | `miniprogram-ci` |
+| 数据存储 | `wx.storage`（本地存储，services 层封装）|
+| CI 工具 | `miniprogram-ci` + GitHub Actions |
+| 测试 | Jest（Services 单元测试）|
 | 构建 | 微信开发者工具 |
 
 ### 项目结构
@@ -68,24 +70,43 @@
 ├── miniprogram/                  # 小程序源码
 │   ├── app.js                    # 全局逻辑（初始化 Mock 数据）
 │   ├── app.json                  # 全局配置（页面路由、TabBar、导航栏）
-│   ├── app.wxss                  # 全局样式
+│   ├── app.wxss                  # 全局样式（CSS 变量系统）
+│   ├── components/               # 公共组件
+│   │   ├── empty-state/          # 空状态提示
+│   │   ├── loading-state/        # 加载状态
+│   │   └── recipe-card/          # 菜谱卡片
 │   ├── pages/                    # 页面目录
 │   │   ├── index/                # 🏆 排行榜首页
 │   │   ├── upload/               # 📝 上传菜谱
 │   │   ├── my/                   # 👤 我的
 │   │   ├── detail/               # 📄 菜谱详情
 │   │   └── notifications/        # 🔔 消息通知
+│   ├── services/                 # 业务服务层
+│   │   ├── storage.js            # 本地存储封装
+│   │   ├── recipeService.js      # 菜谱 CRUD
+│   │   ├── rankingService.js     # 排行榜算法
+│   │   ├── notificationService.js# 通知管理
+│   │   ├── historyService.js     # 浏览历史
+│   │   └── index.js              # 统一导出
 │   ├── utils/
-│   │   └── dataHelper.js         # 数据层：CRUD、排行榜算法、Mock 数据
+│   │   ├── dataHelper.js         # 兼容层（原数据接口，委托 services）
+│   │   └── common.js             # 通用工具函数
 │   ├── cloud/                    # 云开发（预留）
 │   ├── icons/                    # TabBar 图标
 │   └── images/                   # 静态图片资源
 ├── scripts/                      # CI 自动化脚本
+│   ├── lib/cli.js                # 配置合并与参数解析
 │   ├── preview.js                # 生成预览二维码
 │   ├── upload.js                 # 上传代码到微信公众平台
 │   └── login.js                  # 刷新登录态
+├── config/
+│   └── ci.js                     # CI 默认配置
+├── __tests__/                    # Jest 测试用例
+│   └── services/                 # Services 单元测试
 ├── private/                      # 私钥文件（不上传仓库）
-└── package.json                  # Node.js 依赖
+├── .github/workflows/            # GitHub Actions 工作流
+├── package.json                  # Node.js 依赖
+└── jest.setup.js                 # Jest 全局 Mock
 ```
 
 ### 数据模型
@@ -119,17 +140,20 @@ Recipe {
 
 1. 安装 [微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)
 2. 注册 [微信公众平台](https://mp.weixin.qq.com) 小程序账号
-3. 安装 Node.js（≥ 14）
+3. 安装 Node.js（≥ 18）
 
 ### 本地开发
 
 ```bash
 # 克隆仓库
-git clone https://gitee.com/jplu/miniprogram.git
-cd miniprogram
+git clone https://github.com/JPPunk/miniprograms.git
+cd miniprograms
 
 # 安装依赖
 npm install
+
+# 运行测试
+npm test
 
 # 使用微信开发者工具打开 miniprogram/ 目录
 # 填入你的 appid（或选择测试号）
@@ -137,9 +161,27 @@ npm install
 
 ### 数据初始化
 
-首次启动时，`app.js` 会自动调用 `dataHelper.initMockData()` 写入 5 条示例菜谱数据（红烧肉、番茄炒蛋、宫保鸡丁、糖醋排骨、麻婆豆腐）。
+首次启动时，`app.js` 会自动调用 `recipeService.initMockData()` 写入 5 条示例菜谱数据（红烧肉、番茄炒蛋、宫保鸡丁、糖醋排骨、麻婆豆腐）。
 
-### CI 自动化
+---
+
+## 🧪 测试
+
+```bash
+# 运行全部测试
+npm test
+
+# 监听模式
+npm run test:watch
+```
+
+测试覆盖 `services/` 和 `utils/` 下的核心逻辑。`jest.setup.js` 提供了 `wx` 全局 Mock，无需真实小程序环境即可运行单元测试。
+
+---
+
+## 🚀 CI / CD
+
+### 本地发布
 
 #### 1. 配置上传密钥
 
@@ -169,6 +211,23 @@ npm run upload -- --version=1.0.2 --desc="修复已知问题"
 
 不指定版本号时，自动生成格式：`YYMMDD.HHMM`。
 
+### GitHub Actions 自动发布
+
+本项目已配置 `.github/workflows/miniprogram-ci.yml`：
+
+- **Push / PR 到 master**：自动运行测试
+- **PR**：生成预览二维码并上传 Artifact
+- **Push 到 master**：自动上传代码到微信公众平台
+
+#### 配置 Secrets
+
+在 GitHub 仓库 Settings → Secrets and variables → Actions 中添加：
+
+| Secret | 说明 |
+|---|---|
+| `WX_APPID` | 小程序 AppID |
+| `WX_PRIVATE_KEY` | 上传密钥文件内容（完整文本） |
+
 ---
 
 ## 📋 开发规范
@@ -190,11 +249,12 @@ Page({
 
 ### 数据操作
 
-所有数据操作统一通过 `utils/dataHelper.js` 封装，禁止页面直接读写 `wx.storage`。
+所有数据操作统一通过 `services/` 下的服务模块封装，禁止页面直接读写 `wx.storage`。原 `utils/dataHelper.js` 仍保留为兼容层，内部委托给 `services/`。
 
 ### 样式规范
 
 - 尺寸单位：`rpx`
+- 使用 `app.wxss` 中定义的 CSS 变量（`--primary`, `--bg-page` 等）
 - 颜色值：小写十六进制
 - 避免使用 ID 选择器
 - 公共样式提取到 `app.wxss`

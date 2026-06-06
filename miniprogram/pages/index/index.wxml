@@ -6,211 +6,61 @@
 
   <view class="tabs-bar">
     <view
-      class="tab-item {{currentTab === 'likes' ? 'active' : ''}}"
+      class="tab-item {{currentTab === item.key ? 'active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="key"
       bindtap="onTabChange"
-      data-tab="likes"
+      data-tab="{{item.key}}"
     >
-      <text class="tab-icon">❤️</text>
-      <text class="tab-name">点赞榜</text>
-    </view>
-    <view
-      class="tab-item {{currentTab === 'price' ? 'active' : ''}}"
-      bindtap="onTabChange"
-      data-tab="price"
-    >
-      <text class="tab-icon">💰</text>
-      <text class="tab-name">省钱榜</text>
-    </view>
-    <view
-      class="tab-item {{currentTab === 'value' ? 'active' : ''}}"
-      bindtap="onTabChange"
-      data-tab="value"
-    >
-      <text class="tab-icon">🔥</text>
-      <text class="tab-name">性价比</text>
-    </view>
-    <view
-      class="tab-item {{currentTab === 'time' ? 'active' : ''}}"
-      bindtap="onTabChange"
-      data-tab="time"
-    >
-      <text class="tab-icon">🕐</text>
-      <text class="tab-name">最新上传</text>
+      <text class="tab-icon">{{item.icon}}</text>
+      <text class="tab-name">{{item.name}}</text>
     </view>
   </view>
 
   <view class="content-area">
-    <view class="ranking-section" wx:if="{{currentTab === 'likes'}}">
-      <view class="section-title">
-        <text class="title-icon">❤️</text>
-        <text class="title-text">点赞总榜</text>
-        <text class="title-hint">按历史点赞排名</text>
-      </view>
-      <view class="recipe-list">
-        <view
-          class="recipe-item {{index < 3 ? 'top-' + (index + 1) : ''}}"
-          wx:for="{{likesList}}"
-          wx:key="_id"
-          wx:if="{{index < 3 || likesExpanded}}"
-        >
-          <view class="rank-badge" wx:if="{{index < 3}}">
-            <text wx:if="{{index === 0}}">🥇</text>
-            <text wx:elif="{{index === 1}}">🥈</text>
-            <text wx:elif="{{index === 2}}">🥉</text>
-          </view>
-          <view class="rank-num" wx:else>{{index + 1}}</view>
-          <view class="recipe-emoji">{{item.emoji}}</view>
-          <view class="recipe-info">
-            <text class="recipe-name">{{item.name}}</text>
-            <view class="recipe-meta">
-              <text class="meta-item">❤️ {{item.likes}}</text>
-              <text class="meta-item">💰 ¥{{item.totalPrice}}</text>
-            </view>
-          </view>
-          <view class="recipe-arrow" bindtap="goToDetail" data-id="{{item._id}}">›</view>
-        </view>
-      </view>
-      <view class="expand-btn" wx:if="{{likesList.length > 3}}">
-        <view bindtap="expandList" data-key="likes" wx:if="{{!likesExpanded}}">
-          <text>查看全部 {{likesList.length}} 个菜谱</text>
-          <text class="arrow">▼</text>
-        </view>
-        <view bindtap="collapseList" data-key="likes" wx:if="{{likesExpanded}}">
-          <text>收起</text>
-          <text class="arrow">▲</text>
-        </view>
-      </view>
-    </view>
+    <loading-state wx:if="{{loading}}" />
 
-    <view class="ranking-section" wx:if="{{currentTab === 'price'}}">
-      <view class="section-title">
-        <text class="title-icon">💰</text>
-        <text class="title-text">省钱总榜</text>
-        <text class="title-hint">按价格从低到高</text>
-      </view>
-      <view class="recipe-list">
-        <view
-          class="recipe-item {{index < 3 ? 'top-' + (index + 1) : ''}}"
-          wx:for="{{priceList}}"
-          wx:key="_id"
-          wx:if="{{index < 3 || priceExpanded}}"
-        >
-          <view class="rank-badge" wx:if="{{index < 3}}">
-            <text wx:if="{{index === 0}}">🥇</text>
-            <text wx:elif="{{index === 1}}">🥈</text>
-            <text wx:elif="{{index === 2}}">🥉</text>
-          </view>
-          <view class="rank-num" wx:else>{{index + 1}}</view>
-          <view class="recipe-emoji">{{item.emoji}}</view>
-          <view class="recipe-info">
-            <text class="recipe-name">{{item.name}}</text>
-            <view class="recipe-meta">
-              <text class="meta-item">💰 ¥{{item.totalPrice}}</text>
-              <text class="meta-item">❤️ {{item.likes}}</text>
-            </view>
-          </view>
-          <view class="recipe-arrow" bindtap="goToDetail" data-id="{{item._id}}">›</view>
+    <block wx:else>
+      <view class="ranking-section" wx:for="{{rankingSections}}" wx:key="key" wx:if="{{currentTab === item.key}}">
+        <view class="section-title">
+          <text class="title-icon">{{item.icon}}</text>
+          <text class="title-text">{{item.title}}</text>
+          <text class="title-hint">{{item.hint}}</text>
         </view>
-      </view>
-      <view class="expand-btn" wx:if="{{priceList.length > 3}}">
-        <view bindtap="expandList" data-key="price" wx:if="{{!priceExpanded}}">
-          <text>查看全部 {{priceList.length}} 个菜谱</text>
-          <text class="arrow">▼</text>
-        </view>
-        <view bindtap="collapseList" data-key="price" wx:if="{{priceExpanded}}">
-          <text>收起</text>
-          <text class="arrow">▲</text>
-        </view>
-      </view>
-    </view>
 
-    <view class="ranking-section" wx:if="{{currentTab === 'value'}}">
-      <view class="section-title">
-        <text class="title-icon">🔥</text>
-        <text class="title-text">近期性价比热榜</text>
-        <text class="title-hint">近一月点赞÷价格</text>
-      </view>
-      <view class="recipe-list">
-        <view
-          class="recipe-item {{index < 3 ? 'top-' + (index + 1) : ''}}"
-          wx:for="{{valueList}}"
-          wx:key="_id"
-          wx:if="{{index < 3 || valueExpanded}}"
-        >
-          <view class="rank-badge" wx:if="{{index < 3}}">
-            <text wx:if="{{index === 0}}">🥇</text>
-            <text wx:elif="{{index === 1}}">🥈</text>
-            <text wx:elif="{{index === 2}}">🥉</text>
-          </view>
-          <view class="rank-num" wx:else>{{index + 1}}</view>
-          <view class="recipe-emoji">{{item.emoji}}</view>
-          <view class="recipe-info">
-            <text class="recipe-name">{{item.name}}</text>
-            <view class="recipe-meta">
-              <text class="meta-item">❤️ {{item.likes}}</text>
-              <text class="meta-item">💰 ¥{{item.totalPrice}}</text>
-              <text class="meta-item">性价比: {{item.valueScore.toFixed(1)}}</text>
-            </view>
-          </view>
-          <view class="recipe-arrow" bindtap="goToDetail" data-id="{{item._id}}">›</view>
-        </view>
-      </view>
-      <view class="expand-btn" wx:if="{{valueList.length > 3}}">
-        <view bindtap="expandList" data-key="value" wx:if="{{!valueExpanded}}">
-          <text>查看全部 {{valueList.length}} 个菜谱</text>
-          <text class="arrow">▼</text>
-        </view>
-        <view bindtap="collapseList" data-key="value" wx:if="{{valueExpanded}}">
-          <text>收起</text>
-          <text class="arrow">▲</text>
-        </view>
-      </view>
-    </view>
+        <empty-state
+          wx:if="{{item.list.length === 0}}"
+          icon="🍽️"
+          title="暂无菜谱"
+          hint="上传第一个菜谱，开启排行榜吧"
+        />
 
-    <view class="ranking-section" wx:if="{{currentTab === 'time'}}">
-      <view class="section-title">
-        <text class="title-icon">🕐</text>
-        <text class="title-text">最新上传</text>
-        <text class="title-hint">按上传时间排序</text>
-      </view>
-      <view class="recipe-list">
-        <view
-          class="recipe-item {{index < 3 ? 'top-' + (index + 1) : ''}}"
-          wx:for="{{timeList}}"
-          wx:key="_id"
-          wx:if="{{index < 3 || timeExpanded}}"
-        >
-          <view class="rank-badge" wx:if="{{index < 3}}">
-            <text wx:if="{{index === 0}}">🥇</text>
-            <text wx:elif="{{index === 1}}">🥈</text>
-            <text wx:elif="{{index === 2}}">🥉</text>
-          </view>
-          <view class="rank-num" wx:else>{{index + 1}}</view>
-          <view class="recipe-emoji">{{item.emoji}}</view>
-          <view class="recipe-info">
-            <text class="recipe-name">{{item.name}}</text>
-            <view class="recipe-meta">
-              <text class="meta-item">{{item.createTime}}</text>
-              <text class="meta-item">❤️ {{item.likes}}</text>
+        <view class="recipe-list" wx:else>
+          <recipe-card
+            wx:for="{{getDisplayList(item.list, item.expanded)}}"
+            wx:key="_id"
+            recipe="{{item}}"
+            showRank="{{true}}"
+            rank="{{index}}"
+            bindtap="goToDetail"
+          >
+            <view slot="meta" class="recipe-meta">
+              <text class="meta-item" wx:for="{{getMetaList(item, currentTab)}}" wx:key="*this">{{item}}</text>
             </view>
-          </view>
-          <view class="recipe-arrow" bindtap="goToDetail" data-id="{{item._id}}">›</view>
+          </recipe-card>
         </view>
-      </view>
-      <view class="expand-btn" wx:if="{{timeList.length > 3}}">
-        <view bindtap="expandList" data-key="time" wx:if="{{!timeExpanded}}">
-          <text>查看全部 {{timeList.length}} 个菜谱</text>
-          <text class="arrow">▼</text>
-        </view>
-        <view bindtap="collapseList" data-key="time" wx:if="{{timeExpanded}}">
-          <text>收起</text>
-          <text class="arrow">▲</text>
-        </view>
-      </view>
-    </view>
-  </view>
 
-  <view class="loading" wx:if="{{loading}}">
-    <text>加载中...</text>
+        <view class="expand-btn" wx:if="{{item.list.length > previewCount}}">
+          <view bindtap="toggleExpand" data-key="{{item.key}}" wx:if="{{!item.expanded}}">
+            <text>查看全部 {{item.list.length}} 个菜谱</text>
+            <text class="arrow">▼</text>
+          </view>
+          <view bindtap="toggleExpand" data-key="{{item.key}}" wx:if="{{item.expanded}}">
+            <text>收起</text>
+            <text class="arrow">▲</text>
+          </view>
+        </view>
+      </view>
+    </block>
   </view>
 </view>

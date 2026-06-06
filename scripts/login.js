@@ -5,20 +5,20 @@
  *
  * 用法:
  *   npm run login
+ *   npm run login -- --privateKeyPath=/path/to/key
  */
 
 const ci = require('miniprogram-ci');
-const path = require('path');
+const { buildConfig, validateConfig } = require('./lib/cli');
 
-const PROJECT_ROOT = path.resolve(__dirname, '..');
-const PRIVATE_KEY_PATH = path.join(PROJECT_ROOT, 'private', 'private.wxc29e2adc86e681d6.key');
+const config = validateConfig(buildConfig());
 
 (async () => {
   try {
     console.log('🚀 正在获取登录二维码...\n');
 
-    const loginResult = await ci.login({
-      privateKeyPath: PRIVATE_KEY_PATH,
+    await ci.login({
+      privateKeyPath: config.privateKeyPath,
       qrcodeFormat: 'terminal',
       qrcodeOutputDest: '',
     });
@@ -28,7 +28,7 @@ const PRIVATE_KEY_PATH = path.join(PROJECT_ROOT, 'private', 'private.wxc29e2adc8
   } catch (err) {
     console.error('\n❌ 登录失败:', err.message);
     if (err.message.includes('private')) {
-      console.error('\n提示：请确认 private/ 目录下的密钥文件是否存在');
+      console.error('\n提示：请确认私钥文件是否存在');
     }
     process.exit(1);
   }
