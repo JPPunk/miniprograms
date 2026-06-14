@@ -1,52 +1,66 @@
-const { getAll } = require('./recipeService');
+/**
+ * 排行榜服务
+ * 微信运行时兼容：全部用 var，module.exports 整体赋值，不使用 async/await
+ */
 
-const DEFAULT_LIMIT = 100;
-const PREVIEW_LIMIT = 3;
-
-function byLikes(limit = DEFAULT_LIMIT) {
-  return getAll().sort((a, b) => (b.likes || 0) - (a.likes || 0)).slice(0, limit);
+var _storage = null;
+function _getStorage() {
+  if (!_storage) _storage = require('./storage');
+  return _storage;
 }
 
-function byPrice(limit = DEFAULT_LIMIT) {
-  return getAll()
-    .sort((a, b) => parseFloat(a.totalPrice || 0) - parseFloat(b.totalPrice || 0))
-    .slice(0, limit);
+var DEFAULT_LIMIT = 100;
+var PREVIEW_LIMIT = 3;
+
+function byLikes(limit) {
+  limit = limit || DEFAULT_LIMIT;
+  var s = _getStorage();
+  return s.getAll(s.COLLECTIONS.RECIPES, {}, { field: 'likes', order: 'desc' }, limit);
 }
 
-function byValue(limit = DEFAULT_LIMIT) {
-  const now = Date.now();
-  const oneMonthAgo = now - 30 * 24 * 60 * 60 * 1000;
-
-  return getAll()
-    .filter(r => {
-      const uploadTime = r.uploadTime || 0;
-      return uploadTime >= oneMonthAgo;
-    })
-    .map(r => {
-      const price = parseFloat(r.totalPrice) || 1;
-      return {
-        ...r,
-        valueScore: (r.likes || 0) / price
-      };
-    })
-    .sort((a, b) => b.valueScore - a.valueScore)
-    .slice(0, limit);
+function byPrice(limit) {
+  limit = limit || DEFAULT_LIMIT;
+  var s = _getStorage();
+  return s.getAll(s.COLLECTIONS.RECIPES, {}, { field: 'totalPrice', order: 'asc' }, limit);
 }
 
-function byTime(limit = DEFAULT_LIMIT) {
-  return getAll()
-    .sort((a, b) => (b.uploadTime || 0) - (a.uploadTime || 0))
-    .slice(0, limit);
+function byValue(limit) {
+  limit = limit || DEFAULT_LIMIT;
+  var s = _getStorage();
+  var nowMs = Date.now();
+  var oneMonthAgo = nowMs - 30 * 24 * 60 * 60 * 1000;
+  return s.getAll(s.COLLECTIONS.RECIPES, {}, { field: 'uploadTime', order: 'desc' }, limit * 2).then(function (recipes) {
+    var result = [];
+    for (var i = 0; i < recipes.length; i++) {
+      var r = recipes[i];
+      if ((r.uploadTime || 0) >= oneMonthAgo) {
+        var price = parseFloat(r.totalPrice) || 1;
+        var copy = {};
+        for (var k in r) { copy[k] = r[k]; }
+        copy.valueScore = (r.likes || 0) / price;
+        result.push(copy);
+      }
+    }
+    result.sort(function (a, b) { return b.valueScore - a.valueScore; });
+    return result.slice(0, limit);
+  });
 }
 
-function getDisplayList(list, expanded, limit = PREVIEW_LIMIT) {
+function byTime(limit) {
+  limit = limit || DEFAULT_LIMIT;
+  var s = _getStorage();
+  return s.getAll(s.COLLECTIONS.RECIPES, {}, { field: 'uploadTime', order: 'desc' }, limit);
+}
+
+function getDisplayList(list, expanded, limit) {
+  limit = limit || PREVIEW_LIMIT;
   return expanded ? list : list.slice(0, limit);
 }
 
 module.exports = {
-  byLikes,
-  byPrice,
-  byValue,
-  byTime,
-  getDisplayList
+  byLikes: byLikes,
+  byPrice: byPrice,
+  byValue: byValue,
+  byTime: byTime,
+  getDisplayList: getDisplayList
 };

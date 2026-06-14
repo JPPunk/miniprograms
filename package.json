@@ -1,7 +1,7 @@
 {
   "name": "miniprogram-recipe",
   "version": "1.0.0",
-  "description": "划算小厨 - 微信小程序",
+  "description": "妙算小厨 - 微信小程序",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",

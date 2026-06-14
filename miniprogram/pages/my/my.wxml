@@ -5,7 +5,11 @@
     </view>
     <view class="user-info">
       <text class="nickname">{{userInfo.nickName}}</text>
-      <text class="user-id">ID: 10086</text>
+      <view class="badge-row">
+        <text class="user-id">ID: {{userInfo.id}}</text>
+        <text class="badge-tag" wx:if="{{uploadBadge}}">{{uploadBadge.emoji}} {{uploadBadge.name}}</text>
+        <text class="badge-tag like-badge" wx:if="{{likeBadge}}">{{likeBadge.emoji}} {{likeBadge.name}}</text>
+      </view>
     </view>
     <view class="notification-bell" bindtap="goToNotificationList">
       <text class="bell-icon">🔔</text>
@@ -32,7 +36,7 @@
 
   <view class="tabs-section">
     <view class="tab-btn {{currentTab === 'recipes' ? 'active' : ''}}" bindtap="onTabChange" data-tab="recipes">
-      � 我的菜谱
+      🍳 我的菜谱
     </view>
     <view class="tab-btn {{currentTab === 'favorites' ? 'active' : ''}}" bindtap="onTabChange" data-tab="favorites">
       ❤️ 我的收藏
@@ -62,7 +66,7 @@
     </view>
 
     <view class="recipe-list" wx:if="{{currentTab === 'recipes'}}">
-      <view class="recipe-item" wx:for="{{myRecipes}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
+      <view class="recipe-item" wx:for="{{myRecipes}}" wx:key="_id" bindtap="goToDetail" bindlongpress="onRecipeLongPress" data-id="{{item._id}}">
         <view class="recipe-emoji">{{item.emoji}}</view>
         <view class="recipe-info">
           <text class="recipe-name">{{item.name}}</text>

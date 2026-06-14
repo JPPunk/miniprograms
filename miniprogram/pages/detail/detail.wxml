@@ -18,7 +18,7 @@
       </view>
 
       <view class="section" wx:if="{{recipe.dishImages && recipe.dishImages.length > 0}}">
-        <text class="section-title">�️ 成品图片</text>
+        <text class="section-title">🍽️ 成品图片</text>
         <scroll-view class="images-scroll" scroll-x="true">
           <view class="dish-images-list">
             <image
@@ -77,6 +77,12 @@
 
       <view class="divider"></view>
 
+      <!-- 操作区域：编辑/删除（仅作者或管理员可见） -->
+      <view class="action-section" wx:if="{{isOwner || isAdmin}}">
+        <button class="action-btn edit-btn" bindtap="goToEdit">✏️ 编辑</button>
+        <button class="action-btn delete-btn" bindtap="onDelete">🗑️ 删除</button>
+      </view>
+
       <view class="like-section">
         <button class="like-btn {{hasLiked ? 'liked' : ''}}" bindtap="toggleLike">
           <text class="like-icon">{{hasLiked ? '❤️' : '🤍'}}</text>
@@ -89,4 +95,6 @@
   <view class="loading" wx:if="{{loading}}">
     <text>加载中...</text>
   </view>
+
+  <badge-popup show="{{badgeShow}}" badgeEmoji="{{badgeEmoji}}" badgeName="{{badgeName}}" badgeDesc="{{badgeDesc}}" bind:close="onBadgeClose" />
 </view>

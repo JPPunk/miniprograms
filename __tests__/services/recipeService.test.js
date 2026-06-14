@@ -2,16 +2,25 @@ const recipeService = require('../../miniprogram/services/recipeService');
 
 describe('recipeService', () => {
   beforeEach(() => {
-    wx.getStorageSync.mockReturnValue(null);
+    // Mock local storage
+    wx.getStorageSync.mockImplementation((key) => {
+      if (key === 'local_db_recipes') return [];
+      if (key === 'local_db_users') return [];
+      return null;
+    });
     wx.setStorageSync.mockClear();
   });
 
-  test('getAll returns empty array by default', () => {
-    wx.getStorageSync.mockReturnValue(null);
-    expect(recipeService.getAll()).toEqual([]);
+  afterEach(() => {
+    wx.getStorageSync.mockClear();
   });
 
-  test('save creates a recipe with required fields', () => {
+  test('getAll returns empty array by default', async () => {
+    const result = await recipeService.getAll();
+    expect(result).toEqual([]);
+  });
+
+  test('save creates a recipe with required fields', async () => {
     const input = {
       name: '测试菜',
       emoji: '🥗',
@@ -21,7 +30,7 @@ describe('recipeService', () => {
       steps: [{ content: '测试步骤', image: '' }]
     };
 
-    const recipe = recipeService.save(input);
+    const recipe = await recipeService.save(input);
 
     expect(recipe.name).toBe('测试菜');
     expect(recipe.emoji).toBe('🥗');
@@ -32,7 +41,7 @@ describe('recipeService', () => {
     expect(recipe.uploadTime).toBeDefined();
   });
 
-  test('save filters empty ingredients and steps', () => {
+  test('save filters empty ingredients and steps', async () => {
     const input = {
       name: '测试菜',
       totalPrice: '10.00',
@@ -46,46 +55,84 @@ describe('recipeService', () => {
       ]
     };
 
-    const recipe = recipeService.save(input);
+    const recipe = await recipeService.save(input);
     expect(recipe.ingredientItems.length).toBe(1);
     expect(recipe.steps.length).toBe(1);
   });
 
-  test('toggleLike adds like and returns isLiked true', () => {
-    wx.getStorageSync.mockReturnValue([
-      { _id: 'r1', name: '菜', likes: 0, likedUsers: [] }
-    ]);
+  test('toggleLike adds like and returns isLiked true', async () => {
+    wx.getStorageSync.mockImplementation((key) => {
+      if (key === 'local_db_recipes') {
+        return [{ _id: 'r1', name: '菜', likes: 0, likedUsers: [] }];
+      }
+      if (key === 'local_db_users') return [];
+      return null;
+    });
 
-    const result = recipeService.toggleLike('r1', 'user1');
+    const result = await recipeService.toggleLike('r1', 'user1');
     expect(result.isLiked).toBe(true);
     expect(result.recipe.likes).toBe(1);
   });
 
-  test('toggleLike removes like when already liked', () => {
-    wx.getStorageSync.mockReturnValue([
-      { _id: 'r1', name: '菜', likes: 1, likedUsers: ['user1'] }
-    ]);
+  test('toggleLike removes like when already liked', async () => {
+    wx.getStorageSync.mockImplementation((key) => {
+      if (key === 'local_db_recipes') {
+        return [{ _id: 'r1', name: '菜', likes: 1, likedUsers: ['user1'] }];
+      }
+      if (key === 'local_db_users') return [];
+      return null;
+    });
 
-    const result = recipeService.toggleLike('r1', 'user1');
+    const result = await recipeService.toggleLike('r1', 'user1');
     expect(result.isLiked).toBe(false);
     expect(result.recipe.likes).toBe(0);
   });
 
-  test('isLiked returns correct state', () => {
-    wx.getStorageSync.mockReturnValue([
-      { _id: 'r1', name: '菜', likes: 1, likedUsers: ['user1'] }
-    ]);
+  test('isLiked returns correct state', async () => {
+    wx.getStorageSync.mockImplementation((key) => {
+      if (key === 'local_db_recipes') {
+        return [{ _id: 'r1', name: '菜', likes: 1, likedUsers: ['user1'] }];
+      }
+      return null;
+    });
 
-    expect(recipeService.isLiked('r1', 'user1')).toBe(true);
-    expect(recipeService.isLiked('r1', 'user2')).toBe(false);
+    expect(await recipeService.isLiked('r1', 'user1')).toBe(true);
+    expect(await recipeService.isLiked('r1', 'user2')).toBe(false);
   });
 
-  test('initMockData initializes only when empty', () => {
-    wx.getStorageSync.mockReturnValueOnce([]).mockReturnValueOnce([
-      { _id: '1', name: '已有' }
-    ]);
+  test('initMockData initializes only when empty', async () => {
+    let callCount = 0;
+    wx.getStorageSync.mockImplementation((key) => {
+      if (key === 'local_db_recipes') {
+        callCount++;
+        if (callCount === 1) return [];
+        return [{ _id: '1', name: '已有' }];
+      }
+      return [];
+    });
 
-    expect(recipeService.initMockData()).toBe(true);
-    expect(recipeService.initMockData()).toBe(false);
+    expect(await recipeService.initMockData()).toBe(true);
+    expect(await recipeService.initMockData()).toBe(false);
+  });
+
+  test('delete removes recipe from storage', async () => {
+    const recipes = [
+      { _id: 'r1', name: '菜1', authorId: 'test_user' },
+      { _id: 'r2', name: '菜2', authorId: 'other' }
+    ];
+    wx.getStorageSync.mockImplementation((key) => {
+      if (key === 'local_db_recipes') return [...recipes];
+      if (key === 'local_db_users') return [];
+      return null;
+    });
+
+    const result = await recipeService.delete('r1');
+    expect(result).toBe(true);
+
+    // 验证 setStorageSync 被调用，且数据中不再包含 r1
+    const lastCall = wx.setStorageSync.mock.calls.find(c => c[0] === 'local_db_recipes');
+    expect(lastCall).toBeDefined();
+    expect(lastCall[1].find(r => r._id === 'r1')).toBeUndefined();
+    expect(lastCall[1].find(r => r._id === 'r2')).toBeDefined();
   });
 });

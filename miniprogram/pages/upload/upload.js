@@ -1,7 +1,10 @@
 var dataHelper = require('../../utils/dataHelper.js');
+var badgeService = require('../../services/badgeService.js');
 
 Page({
   data: {
+    editId: '',
+    editMode: false,
     name: '',
     ingredients: [
       { name: '', qty: '', unit: '', unitIndex: 0, price: '', image: '' }
@@ -12,6 +15,10 @@ Page({
     ],
     dishImages: [],
     submitting: false,
+    badgeShow: false,
+    badgeEmoji: '',
+    badgeName: '',
+    badgeDesc: '',
     units: [
       { name: '克(g)', value: 'g' },
       { name: '千克(kg)', value: 'kg' },
@@ -35,149 +42,206 @@ Page({
     ]
   },
 
+  onLoad: function(options) {
+    if (options.id) {
+      this.setData({ editId: options.id, editMode: true });
+      this.loadRecipeForEdit(options.id);
+    } else {
+      this.resetForm();
+    }
+  },
+
+  onShow: function() {
+  },
+
+  loadRecipeForEdit: function(id) {
+    var that = this;
+    dataHelper.getRecipeById(id).then(function (recipe) {
+      if (!recipe) {
+        wx.showToast({ title: '菜谱不存在', icon: 'none' });
+        return;
+      }
+
+      var ingredients = (recipe.ingredientItems || []).map(function (item) {
+        var unitIndex = -1;
+        for (var j = 0; j < that.data.units.length; j++) {
+          if (that.data.units[j].name === item.unit) {
+            unitIndex = j;
+            break;
+          }
+        }
+        var newItem = {};
+        for (var k in item) { newItem[k] = item[k]; }
+        newItem.unitIndex = unitIndex >= 0 ? unitIndex : 0;
+        return newItem;
+      });
+
+      that.setData({
+        name: recipe.name,
+        ingredients: ingredients.length > 0 ? ingredients : [{ name: '', qty: '', unit: '', unitIndex: 0, price: '', image: '' }],
+        totalPrice: recipe.totalPrice || '0.00',
+        steps: (recipe.steps && recipe.steps.length > 0) ? recipe.steps : [{ content: '', image: '' }],
+        dishImages: recipe.dishImages || []
+      });
+    }).catch(function (err) {
+      console.error('加载菜谱失败:', err);
+      wx.showToast({ title: '加载失败', icon: 'none' });
+    });
+  },
+
   onNameInput: function(e) {
     this.setData({ name: e.detail.value });
   },
 
   addIngredient: function() {
-    const ingredients = [...this.data.ingredients];
+    var ingredients = this.data.ingredients.slice();
     ingredients.push({ name: '', qty: '', unit: '', unitIndex: 0, price: '', image: '' });
-    this.setData({ ingredients });
+    this.setData({ ingredients: ingredients });
   },
 
   removeIngredient: function(e) {
-    const index = e.currentTarget.dataset.index;
+    var index = e.currentTarget.dataset.index;
     if (this.data.ingredients.length <= 1) return;
-    const ingredients = [...this.data.ingredients];
+    var ingredients = this.data.ingredients.slice();
     ingredients.splice(index, 1);
-    this.setData({ ingredients });
+    this.setData({ ingredients: ingredients });
     this.calculateTotalPrice();
   },
 
   onIngredientName: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const ingredients = [...this.data.ingredients];
+    var index = e.currentTarget.dataset.index;
+    var ingredients = this.data.ingredients.slice();
     ingredients[index].name = e.detail.value;
-    this.setData({ ingredients });
+    this.setData({ ingredients: ingredients });
   },
 
   onIngredientQty: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const ingredients = [...this.data.ingredients];
+    var index = e.currentTarget.dataset.index;
+    var ingredients = this.data.ingredients.slice();
     ingredients[index].qty = e.detail.value;
-    this.setData({ ingredients });
+    this.setData({ ingredients: ingredients });
   },
 
   onUnitChange: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const ingredients = [...this.data.ingredients];
-    const unitIndex = e.detail.value;
+    var index = e.currentTarget.dataset.index;
+    var ingredients = this.data.ingredients.slice();
+    var unitIndex = e.detail.value;
     ingredients[index].unit = this.data.units[unitIndex].name;
     ingredients[index].unitIndex = unitIndex;
-    this.setData({ ingredients });
+    this.setData({ ingredients: ingredients });
   },
 
   onIngredientPrice: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const ingredients = [...this.data.ingredients];
+    var index = e.currentTarget.dataset.index;
+    var ingredients = this.data.ingredients.slice();
     ingredients[index].price = e.detail.value;
-    this.setData({ ingredients });
+    this.setData({ ingredients: ingredients });
     this.calculateTotalPrice();
   },
 
   chooseIngredientImage: function(e) {
-    const index = e.currentTarget.dataset.index;
+    var index = e.currentTarget.dataset.index;
+    var that = this;
     wx.chooseImage({
       count: 1,
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
-      success: res => {
-        const ingredients = [...this.data.ingredients];
+      success: function (res) {
+        var ingredients = that.data.ingredients.slice();
         ingredients[index].image = res.tempFilePaths[0];
-        this.setData({ ingredients });
+        that.setData({ ingredients: ingredients });
       }
     });
   },
 
   calculateTotalPrice: function() {
-    let total = 0;
-    this.data.ingredients.forEach(item => {
-      const price = parseFloat(item.price) || 0;
+    var total = 0;
+    var ingredients = this.data.ingredients;
+    for (var i = 0; i < ingredients.length; i++) {
+      var price = parseFloat(ingredients[i].price) || 0;
       total += price;
-    });
+    }
     this.setData({ totalPrice: total.toFixed(2) });
   },
 
   addStep: function() {
-    const steps = [...this.data.steps];
+    var steps = this.data.steps.slice();
     steps.push({ content: '', image: '' });
-    this.setData({ steps });
+    this.setData({ steps: steps });
   },
 
   removeStep: function(e) {
-    const index = e.currentTarget.dataset.index;
+    var index = e.currentTarget.dataset.index;
     if (this.data.steps.length <= 1) return;
-    const steps = [...this.data.steps];
+    var steps = this.data.steps.slice();
     steps.splice(index, 1);
-    this.setData({ steps });
+    this.setData({ steps: steps });
   },
 
   onStepContent: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const steps = [...this.data.steps];
+    var index = e.currentTarget.dataset.index;
+    var steps = this.data.steps.slice();
     steps[index].content = e.detail.value;
-    this.setData({ steps });
+    this.setData({ steps: steps });
   },
 
   chooseStepImage: function(e) {
-    const index = e.currentTarget.dataset.index;
+    var index = e.currentTarget.dataset.index;
+    var that = this;
     wx.chooseImage({
       count: 1,
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
-      success: res => {
-        const steps = [...this.data.steps];
+      success: function (res) {
+        var steps = that.data.steps.slice();
         steps[index].image = res.tempFilePaths[0];
-        this.setData({ steps });
+        that.setData({ steps: steps });
       }
     });
   },
 
   chooseDishImage: function() {
+    var that = this;
     wx.chooseImage({
       count: 3 - this.data.dishImages.length,
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
-      success: res => {
-        this.setData({
-          dishImages: [...this.data.dishImages, ...res.tempFilePaths]
+      success: function (res) {
+        that.setData({
+          dishImages: that.data.dishImages.concat(res.tempFilePaths)
         });
       }
     });
   },
 
   removeDishImage: function(e) {
-    const index = e.currentTarget.dataset.index;
-    const images = [...this.data.dishImages];
+    var index = e.currentTarget.dataset.index;
+    var images = this.data.dishImages.slice();
     images.splice(index, 1);
     this.setData({ dishImages: images });
   },
 
   submitRecipe: function() {
-    const { name, ingredients, steps, dishImages } = this.data;
+    var that = this;
+    var name = this.data.name;
+    var ingredients = this.data.ingredients;
+    var steps = this.data.steps;
+    var dishImages = this.data.dishImages;
+    var editMode = this.data.editMode;
+    var editId = this.data.editId;
 
     if (!name.trim()) {
       wx.showToast({ title: '请输入菜谱名称', icon: 'none' });
       return;
     }
 
-    const validIngredients = ingredients.filter(item => item.name.trim() && item.price);
+    var validIngredients = ingredients.filter(function (item) { return item.name.trim() && item.price; });
     if (validIngredients.length === 0) {
       wx.showToast({ title: '请至少填写一个完整食材', icon: 'none' });
       return;
     }
 
-    const validSteps = steps.filter(step => step.content.trim());
+    var validSteps = steps.filter(function (step) { return step.content.trim(); });
     if (validSteps.length === 0) {
       wx.showToast({ title: '请至少填写一个步骤', icon: 'none' });
       return;
@@ -185,28 +249,70 @@ Page({
 
     this.setData({ submitting: true });
 
-    const recipe = {
+    var recipeData = {
       name: name.trim(),
       emoji: this.getEmoji(name),
       dishImages: dishImages,
-      ingredientItems: ingredients.filter(item => item.name.trim()),
-      steps: steps.filter(step => step.content.trim()),
+      ingredientItems: ingredients.filter(function (item) { return item.name.trim(); }),
+      steps: steps.filter(function (step) { return step.content.trim(); }),
       totalPrice: this.data.totalPrice
     };
 
-    dataHelper.saveRecipe(recipe);
+    var savePromise;
+    if (editMode) {
+      savePromise = dataHelper.getRecipeById(editId).then(function (existing) {
+        if (!existing) {
+          wx.showToast({ title: '菜谱不存在', icon: 'none' });
+          return null;
+        }
+        var merged = {};
+        for (var k in existing) { merged[k] = existing[k]; }
+        for (var k2 in recipeData) { merged[k2] = recipeData[k2]; }
+        return dataHelper.updateRecipe(merged);
+      });
+    } else {
+      savePromise = dataHelper.saveRecipe(recipeData).then(function () {
+        that.resetForm();
+      });
+    }
 
-    setTimeout(() => {
-      wx.showToast({ title: '上传成功！', icon: 'success' });
-      this.resetForm();
-      this.setData({ submitting: false });
-    }, 1000);
+    savePromise.then(function (result) {
+      if (result === null) return;
+      var title = editMode ? '保存成功！' : '上传成功！';
+      wx.showToast({ title: title, icon: 'success' });
+
+      // 上传新菜谱后检查徽章
+      if (!editMode && result && result._id) {
+        var userId = dataHelper.getUserId ? dataHelper.getUserId() : 'test_user';
+        badgeService.onRecipeUploaded(userId, result._id).then(function () {
+          return badgeService.checkUploadBadge(userId);
+        }).then(function (badgeResult) {
+          if (badgeResult && badgeResult.upgraded && badgeResult.badge) {
+            that.setData({
+              badgeShow: true,
+              badgeEmoji: badgeResult.badge.emoji,
+              badgeName: badgeResult.badge.name,
+              badgeDesc: badgeResult.badge.desc
+            });
+          }
+        }).catch(function () {});
+      }
+
+      setTimeout(function () {
+        wx.navigateBack();
+      }, 1500);
+    }).catch(function (err) {
+      console.error('操作失败:', err);
+      wx.showToast({ title: '操作失败，请重试', icon: 'none' });
+    }).then(function () {
+      that.setData({ submitting: false });
+    });
   },
 
   getEmoji: function(name) {
-    const emojis = ['🥩', '🍳', '🍗', '🍖', '🧈', '🥘', '🍲', '🥗', '🍜', '🍝', '🥟', '🍕'];
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
+    var emojis = ['\uD83C\uDF56', '\uD83C\uDF73', '\uD83C\uDF57', '\uD83C\uDF56', '\uD83E\uDDC8', '\uD83E\uDD58', '\uD83C\uDF72', '\uD83E\uDD57', '\uD83C\uDF5C', '\uD83C\uDF5D', '\uD83E\uDD5F', '\uD83C\uDF55'];
+    var hash = 0;
+    for (var i = 0; i < name.length; i++) {
       hash = ((hash << 5) - hash) + name.charCodeAt(i);
       hash = hash & hash;
     }
@@ -215,11 +321,17 @@ Page({
 
   resetForm: function() {
     this.setData({
+      editId: '',
+      editMode: false,
       name: '',
       ingredients: [{ name: '', qty: '', unit: '', unitIndex: 0, price: '', image: '' }],
       totalPrice: '0.00',
       steps: [{ content: '', image: '' }],
       dishImages: []
     });
+  },
+
+  onBadgeClose: function () {
+    this.setData({ badgeShow: false });
   }
 });

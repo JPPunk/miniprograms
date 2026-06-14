@@ -12,7 +12,7 @@
 
 ## 项目信息
 
-- 项目名称：划算小厨（微信小程序）
+- 项目名称：妙算小厨（微信小程序）
 - 仓库地址：https://github.com/JPPunk/miniprograms
 - 技术栈：微信小程序 + miniprogram-ci
 

@@ -1,6 +1,6 @@
 <view class="container">
   <view class="form-card">
-    <view class="form-title">📝 上传菜谱</view>
+    <view class="form-title">{{editMode ? '✏️ 编辑菜谱' : '📝 上传菜谱'}}</view>
 
     <view class="input-group">
       <text class="input-label">菜谱名称 *</text>
@@ -117,7 +117,9 @@
     </view>
 
     <button class="btn-submit" bindtap="submitRecipe" loading="{{submitting}}">
-      {{submitting ? '上传中...' : '发布菜谱'}}
+      {{submitting ? '保存中...' : (editMode ? '保存修改' : '发布菜谱')}}
     </button>
   </view>
+
+  <badge-popup show="{{badgeShow}}" badgeEmoji="{{badgeEmoji}}" badgeName="{{badgeName}}" badgeDesc="{{badgeDesc}}" bind:close="onBadgeClose" />
 </view>

@@ -1,7 +1,7 @@
 <view class="container">
   <view class="header">
     <text class="title">🏆 排行榜</text>
-    <text class="subtitle">划算小厨 · 每周更新</text>
+    <text class="subtitle">妙算小厨 · 实时榜单</text>
   </view>
 
   <view class="tabs-bar">
@@ -21,15 +21,15 @@
     <loading-state wx:if="{{loading}}" />
 
     <block wx:else>
-      <view class="ranking-section" wx:for="{{rankingSections}}" wx:key="key" wx:if="{{currentTab === item.key}}">
+      <view class="ranking-section" wx:for="{{sections}}" wx:for-item="section" wx:key="key" wx:if="{{section.show}}">
         <view class="section-title">
-          <text class="title-icon">{{item.icon}}</text>
-          <text class="title-text">{{item.title}}</text>
-          <text class="title-hint">{{item.hint}}</text>
+          <text class="title-icon">{{section.icon}}</text>
+          <text class="title-text">{{section.title}}</text>
+          <text class="title-hint">{{section.hint}}</text>
         </view>
 
         <empty-state
-          wx:if="{{item.list.length === 0}}"
+          wx:if="{{section.list.length === 0}}"
           icon="🍽️"
           title="暂无菜谱"
           hint="上传第一个菜谱，开启排行榜吧"
@@ -37,25 +37,27 @@
 
         <view class="recipe-list" wx:else>
           <recipe-card
-            wx:for="{{getDisplayList(item.list, item.expanded)}}"
+            wx:for="{{section.displayList}}"
+            wx:for-item="recipe"
+            wx:for-index="idx"
             wx:key="_id"
-            recipe="{{item}}"
+            recipe="{{recipe}}"
             showRank="{{true}}"
-            rank="{{index}}"
+            rank="{{idx}}"
             bindtap="goToDetail"
           >
             <view slot="meta" class="recipe-meta">
-              <text class="meta-item" wx:for="{{getMetaList(item, currentTab)}}" wx:key="*this">{{item}}</text>
+              <text class="meta-item" wx:for="{{section.metaList[idx]}}" wx:for-item="m" wx:key="*this">{{m}}</text>
             </view>
           </recipe-card>
         </view>
 
-        <view class="expand-btn" wx:if="{{item.list.length > previewCount}}">
-          <view bindtap="toggleExpand" data-key="{{item.key}}" wx:if="{{!item.expanded}}">
-            <text>查看全部 {{item.list.length}} 个菜谱</text>
+        <view class="expand-btn" wx:if="{{section.list.length > previewCount}}">
+          <view bindtap="toggleExpand" data-key="{{section.key}}" wx:if="{{!section.expanded}}">
+            <text>查看全部 {{section.list.length}} 个菜谱</text>
             <text class="arrow">▼</text>
           </view>
-          <view bindtap="toggleExpand" data-key="{{item.key}}" wx:if="{{item.expanded}}">
+          <view bindtap="toggleExpand" data-key="{{section.key}}" wx:if="{{section.expanded}}">
             <text>收起</text>
             <text class="arrow">▲</text>
           </view>

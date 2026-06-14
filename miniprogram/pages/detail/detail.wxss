@@ -257,6 +257,36 @@
   padding-bottom: 30rpx;
 }
 
+.action-section {
+  display: flex;
+  gap: 24rpx;
+  margin-bottom: 30rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 28rpx;
+  border-radius: 12rpx;
+  text-align: center;
+  border: none;
+}
+
+.action-btn::after {
+  border: none;
+}
+
+.edit-btn {
+  background: #f0f5ff;
+  color: #3b82f6;
+}
+
+.delete-btn {
+  background: #fff0f0;
+  color: #e64340;
+}
+
 .like-btn {
   display: flex;
   flex-direction: row;

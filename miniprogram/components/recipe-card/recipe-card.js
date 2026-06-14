@@ -17,8 +17,8 @@ Component({
     }
   },
   methods: {
-    onTap() {
-      const { recipe } = this.properties;
+    onTap: function () {
+      var recipe = this.properties.recipe;
       if (recipe && recipe._id) {
         this.triggerEvent('tap', { id: recipe._id });
       }

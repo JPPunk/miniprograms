@@ -9,9 +9,10 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ff6b35",
-    "navigationBarTitleText": "划算小厨",
+    "navigationBarTitleText": "妙算小厨",
     "navigationBarTextStyle": "white"
   },
+  "cloud": true,
   "tabBar": {
     "color": "#666666",
     "selectedColor": "#ff6b35",

@@ -43,6 +43,27 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+.badge-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.badge-tag {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 20rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 16rpx;
+  line-height: 1.4;
+}
+
+.badge-tag.like-badge {
+  background: rgba(255, 77, 79, 0.4);
+}
+
 .notification-bell {
   position: relative;
   padding: 10rpx;

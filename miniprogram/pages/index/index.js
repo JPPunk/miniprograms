@@ -1,12 +1,11 @@
-const dataHelper = require('../../utils/dataHelper.js');
-const rankingService = require('../../services/rankingService.js');
+var dataHelper = require('../../utils/dataHelper.js');
 
-const PREVIEW_COUNT = 3;
-const RANKING_META = {
-  likes: (item) => [`❤️ ${item.likes || 0}`, `💰 ¥${item.totalPrice}`],
-  price: (item) => [`💰 ¥${item.totalPrice}`, `❤️ ${item.likes || 0}`],
-  value: (item) => [`❤️ ${item.likes || 0}`, `💰 ¥${item.totalPrice}`, `性价比: ${item.valueScore ? item.valueScore.toFixed(1) : '0.0'}`],
-  time: (item) => [`${item.createTime}`, `❤️ ${item.likes || 0}`]
+var PREVIEW_COUNT = 10;
+var RANKING_META = {
+  likes: function (item) { return ['❤️ ' + (item.likes || 0), '💰 ¥' + item.totalPrice]; },
+  price: function (item) { return ['💰 ¥' + item.totalPrice, '❤️ ' + (item.likes || 0)]; },
+  value: function (item) { return ['❤️ ' + (item.likes || 0), '💰 ¥' + item.totalPrice, '性价比: ' + (item.valueScore ? item.valueScore.toFixed(1) : '0.0')]; },
+  time: function (item) { return [item.createTime, '❤️ ' + (item.likes || 0)]; }
 };
 
 Page({
@@ -18,86 +17,108 @@ Page({
       { key: 'value', name: '性价比', icon: '🔥' },
       { key: 'time', name: '最新', icon: '🕐' }
     ],
-    rankingSections: {
-      likes: { key: 'likes', title: '点赞总榜', hint: '按历史点赞排名', icon: '❤️', list: [], expanded: false },
-      price: { key: 'price', title: '省钱总榜', hint: '按价格从低到高', icon: '💰', list: [], expanded: false },
-      value: { key: 'value', title: '近期性价比热榜', hint: '近一月点赞÷价格', icon: '🔥', list: [], expanded: false },
-      time: { key: 'time', title: '最新上传', hint: '按上传时间排序', icon: '🕐', list: [], expanded: false }
-    },
+    sections: [],
     previewCount: PREVIEW_COUNT,
     loading: false
   },
 
-  onLoad() {
-    this.loadCurrentRanking();
+  onLoad: function () {
+    this.loadAllRankings();
   },
 
-  onShow() {
-    this.loadCurrentRanking();
+  onShow: function () {
+    this.loadAllRankings();
   },
 
-  loadCurrentRanking() {
-    const { currentTab } = this.data;
-    this.setData({ loading: true });
-
-    // 按需加载当前 tab，避免一次性加载全部榜单
-    const loaders = {
-      likes: rankingService.byLikes,
-      price: rankingService.byPrice,
-      value: rankingService.byValue,
-      time: rankingService.byTime
+  _buildSections: function (likesList, priceList, valueList, timeList) {
+    var raw = {
+      likes: { key: 'likes', title: '点赞总榜', hint: '按历史点赞排名', icon: '❤️', list: likesList || [] },
+      price: { key: 'price', title: '省钱总榜', hint: '按价格从低到高', icon: '💰', list: priceList || [] },
+      value: { key: 'value', title: '近期性价比热榜', hint: '近一月点赞÷价格', icon: '🔥', list: valueList || [] },
+      time: { key: 'time', title: '最新上传', hint: '按上传时间排序', icon: '🕐', list: timeList || [] }
     };
 
-    const list = loaders[currentTab](100);
-    this.setData({
-      [`rankingSections.${currentTab}.list`]: list,
-      loading: false
-    });
-  },
-
-  loadAllRankings() {
-    // 保留兼容方法：供需要时全量加载
-    this.setData({
-      'rankingSections.likes.list': rankingService.byLikes(100),
-      'rankingSections.price.list': rankingService.byPrice(100),
-      'rankingSections.value.list': rankingService.byValue(100),
-      'rankingSections.time.list': rankingService.byTime(100)
-    });
-  },
-
-  onTabChange(e) {
-    const tab = e.currentTarget.dataset.tab;
-    this.setData({ currentTab: tab }, () => {
-      // 如果该 tab 未加载过数据，再加载
-      const section = this.data.rankingSections[tab];
-      if (!section.list || section.list.length === 0) {
-        this.loadCurrentRanking();
+    var currentTab = this.data.currentTab;
+    var sections = [];
+    var keys = ['likes', 'price', 'value', 'time'];
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      var section = raw[k];
+      // 为每个 section 预计算 displayList 和 metaList
+      var list = section.list;
+      var displayList = list.slice(0, PREVIEW_COUNT);
+      var metaList = [];
+      for (var j = 0; j < list.length; j++) {
+        var mapper = RANKING_META[k];
+        metaList.push(mapper ? mapper(list[j]) : []);
       }
+      sections.push({
+        key: section.key,
+        title: section.title,
+        hint: section.hint,
+        icon: section.icon,
+        list: list,
+        displayList: displayList,
+        metaList: metaList,
+        expanded: false,
+        show: (k === currentTab)
+      });
+    }
+    return sections;
+  },
+
+  loadAllRankings: function () {
+    var that = this;
+    that.setData({ loading: true });
+
+    Promise.all([
+      dataHelper.getRankingByLikes(),
+      dataHelper.getRankingByPrice(),
+      dataHelper.getRankingByValue(),
+      dataHelper.getRankingByTime()
+    ]).then(function (results) {
+      var sections = that._buildSections(results[0], results[1], results[2], results[3]);
+      that.setData({ sections: sections, loading: false });
+    }).catch(function (err) {
+      console.error('加载排行榜失败:', err);
+      that.setData({ loading: false });
     });
   },
 
-  toggleExpand(e) {
-    const key = e.currentTarget.dataset.key;
-    const expanded = !this.data.rankingSections[key].expanded;
-    this.setData({
-      [`rankingSections.${key}.expanded`]: expanded
-    });
+  onTabChange: function (e) {
+    var tab = e.currentTarget.dataset.tab;
+    var sections = this.data.sections;
+    for (var i = 0; i < sections.length; i++) {
+      sections[i].show = (sections[i].key === tab);
+    }
+    this.setData({ currentTab: tab, sections: sections });
   },
 
-  getDisplayList(list, expanded) {
-    return expanded ? list : list.slice(0, PREVIEW_COUNT);
+  toggleExpand: function (e) {
+    var key = e.currentTarget.dataset.key;
+    var sections = this.data.sections;
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].key === key) {
+        sections[i].expanded = !sections[i].expanded;
+        // 切换时更新 displayList
+        if (sections[i].expanded) {
+          sections[i].displayList = sections[i].list;
+        } else {
+          sections[i].displayList = sections[i].list.slice(0, PREVIEW_COUNT);
+        }
+        break;
+      }
+    }
+    this.setData({ sections: sections });
   },
 
-  getMetaList(item, tabKey) {
-    const mapper = RANKING_META[tabKey];
-    return mapper ? mapper(item) : [];
-  },
-
-  goToDetail(e) {
-    const id = e.detail.id;
-    dataHelper.addToHistory(id);
-    wx.navigateTo({
-      url: '/pages/detail/detail?id=' + id
+  goToDetail: function (e) {
+    var id = e.detail.id;
+    if (!id) return;
+    dataHelper.addToHistory(id).then(function () {
+      wx.navigateTo({ url: '/pages/detail/detail?id=' + id });
+    }).catch(function () {
+      wx.navigateTo({ url: '/pages/detail/detail?id=' + id });
     });
   }
 });
