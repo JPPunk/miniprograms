@@ -1,0 +1,56 @@
+.badge-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.badge-modal {
+  width: 560rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 50rpx 40rpx;
+  text-align: center;
+}
+
+.badge-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #ff6b35;
+  margin-bottom: 30rpx;
+}
+
+.badge-icon {
+  font-size: 120rpx;
+  margin-bottom: 20rpx;
+}
+
+.badge-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.badge-desc {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 40rpx;
+  line-height: 1.5;
+}
+
+.badge-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff6b35, #ff8c5a);
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: bold;
+  padding: 16rpx 80rpx;
+  border-radius: 40rpx;
+}

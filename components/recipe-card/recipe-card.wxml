@@ -1,0 +1,16 @@
+<view class="recipe-card" bindtap="onTap">
+  <view class="rank-badge" wx:if="{{showRank && rank < 3}}">
+    <text wx:if="{{rank === 0}}">🥇</text>
+    <text wx:elif="{{rank === 1}}">🥈</text>
+    <text wx:elif="{{rank === 2}}">🥉</text>
+  </view>
+  <view class="rank-num" wx:elif="{{showRank}}">{{rank + 1}}</view>
+  <view class="recipe-emoji">{{recipe.emoji || '🍽️'}}</view>
+  <view class="recipe-info">
+    <text class="recipe-name">{{recipe.name}}</text>
+    <view class="recipe-meta">
+      <slot name="meta"></slot>
+    </view>
+  </view>
+  <view class="recipe-arrow">›</view>
+</view>

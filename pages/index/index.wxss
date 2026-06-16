@@ -1,0 +1,136 @@
+.container {
+  min-height: 100vh;
+  background: var(--bg-page);
+}
+
+.header {
+  background: var(--gradient-primary);
+  padding: 40rpx 30rpx 30rpx;
+  text-align: center;
+}
+
+.title {
+  display: block;
+  font-size: var(--font-xl);
+  font-weight: bold;
+  color: var(--text-inverse);
+  margin-bottom: 8rpx;
+}
+
+.subtitle {
+  font-size: var(--font-sm);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.tabs-bar {
+  display: flex;
+  background: var(--bg-card);
+  padding: var(--space-sm) 10rpx;
+  border-bottom: 1rpx solid var(--divider);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10rpx 0;
+  position: relative;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50rpx;
+  height: 4rpx;
+  background: var(--primary);
+  border-radius: 2rpx;
+}
+
+.tab-icon {
+  font-size: 36rpx;
+  margin-bottom: 4rpx;
+}
+
+.tab-name {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+}
+
+.tab-item.active .tab-name {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.content-area {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.ranking-section {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.title-icon {
+  font-size: 40rpx;
+  margin-right: var(--space-xs);
+}
+
+.title-text {
+  font-size: var(--font-lg);
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-right: var(--space-sm);
+}
+
+.title-hint {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+}
+
+.recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.recipe-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.meta-item {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+}
+
+.expand-btn {
+  text-align: center;
+  padding: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.expand-btn view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-base);
+  color: var(--primary);
+}
+
+.expand-btn .arrow {
+  margin-left: var(--space-xs);
+  font-size: var(--font-sm);
+}

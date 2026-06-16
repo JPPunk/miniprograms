@@ -1,0 +1,68 @@
+<view class="container">
+  <view class="header">
+    <text class="title">🏆 排行榜</text>
+    <text class="subtitle">妙算小厨 · 实时榜单</text>
+  </view>
+
+  <view class="tabs-bar">
+    <view
+      class="tab-item {{currentTab === item.key ? 'active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="key"
+      bindtap="onTabChange"
+      data-tab="{{item.key}}"
+    >
+      <text class="tab-icon">{{item.icon}}</text>
+      <text class="tab-name">{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="content-area">
+    <loading-state wx:if="{{loading}}" />
+
+    <block wx:else>
+      <view class="ranking-section" wx:for="{{sections}}" wx:for-item="section" wx:key="key" wx:if="{{section.show}}">
+        <view class="section-title">
+          <text class="title-icon">{{section.icon}}</text>
+          <text class="title-text">{{section.title}}</text>
+          <text class="title-hint">{{section.hint}}</text>
+        </view>
+
+        <empty-state
+          wx:if="{{section.list.length === 0}}"
+          icon="🍽️"
+          title="暂无菜谱"
+          hint="上传第一个菜谱，开启排行榜吧"
+        />
+
+        <view class="recipe-list" wx:else>
+          <recipe-card
+            wx:for="{{section.displayList}}"
+            wx:for-item="recipe"
+            wx:for-index="idx"
+            wx:key="_id"
+            recipe="{{recipe}}"
+            showRank="{{true}}"
+            rank="{{idx}}"
+            bindtap="goToDetail"
+          >
+            <view slot="meta" class="recipe-meta">
+              <text class="meta-item" wx:for="{{section.metaList[idx]}}" wx:for-item="m" wx:key="*this">{{m}}</text>
+            </view>
+          </recipe-card>
+        </view>
+
+        <view class="expand-btn" wx:if="{{section.list.length > previewCount}}">
+          <view bindtap="toggleExpand" data-key="{{section.key}}" wx:if="{{!section.expanded}}">
+            <text>查看全部 {{section.list.length}} 个菜谱</text>
+            <text class="arrow">▼</text>
+          </view>
+          <view bindtap="toggleExpand" data-key="{{section.key}}" wx:if="{{section.expanded}}">
+            <text>收起</text>
+            <text class="arrow">▲</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>徽章效果预览</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+
+  .phone-frame {
+    width: 375px; height: 812px; margin: 30px auto;
+    border: 2px solid #333; border-radius: 40px;
+    overflow: hidden; position: relative; background: #f5f5f5;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  /* === 用户区域 === */
+  .user-section {
+    display: flex; align-items: center;
+    background: linear-gradient(135deg, #ff6b35, #ff8c5a);
+    padding: 60px 20px 20px;
+  }
+  .avatar { width: 60px; height: 60px; border-radius: 30px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; margin-right: 15px; }
+  .user-info { flex: 1; }
+  .nickname { display: block; font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 4px; }
+  .badge-row { display: flex; align-items: center; gap: 6px; }
+  .user-id { font-size: 12px; color: rgba(255,255,255,0.8); }
+  .badge-tag { display: inline-block; background: rgba(255,255,255,0.25); color: #fff; font-size: 10px; padding: 1px 8px; border-radius: 10px; line-height: 1.4; }
+  .badge-tag.like-badge { background: rgba(255, 77, 79, 0.4); }
+
+  /* === 弹窗遮罩 === */
+  .badge-mask {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;
+    z-index: 999;
+  }
+  .badge-modal {
+    width: 280px; background: #fff; border-radius: 16px; padding: 30px 24px; text-align: center;
+  }
+  .badge-title { font-size: 16px; font-weight: bold; color: #ff6b35; margin-bottom: 16px; }
+  .badge-icon { font-size: 64px; margin-bottom: 10px; }
+  .badge-name { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 8px; }
+  .badge-desc { font-size: 13px; color: #999; margin-bottom: 24px; line-height: 1.5; }
+  .badge-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff6b35, #ff8c5a);
+    color: #fff; font-size: 15px; font-weight: bold;
+    padding: 10px 50px; border-radius: 24px; border: none; cursor: pointer;
+  }
+
+  /* === 统计栏 === */
+  .stats { display: flex; background: #fff; padding: 15px 0; }
+  .stat { flex: 1; text-align: center; }
+  .stat-num { display: block; font-size: 20px; font-weight: bold; color: #ff6b35; margin-bottom: 4px; }
+  .stat-label { font-size: 12px; color: #999; }
+
+  .section-label {
+    padding: 20px; font-size: 14px; color: #999; background: #fff; margin-top: 10px; text-align: center;
+  }
+
+  /* === 分级展示 === */
+  .tier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px 20px; background: #fff; }
+  .tier-card {
+    border: 1px solid #f0f0f0; border-radius: 12px; padding: 12px; text-align: center;
+  }
+  .tier-card.earned { border-color: #ff6b35; background: #fff8f5; }
+  .tier-emoji { font-size: 36px; margin-bottom: 6px; }
+  .tier-name { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 4px; }
+  .tier-req { font-size: 11px; color: #999; }
+  .tier-card.earned .tier-name { color: #ff6b35; }
+
+  .scroll-area {
+    height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+</style>
+</head>
+<body>
+
+<!-- 手机模拟框 -->
+<div class="phone-frame">
+  <div class="scroll-area">
+
+    <!-- 用户区域 + 徽章标签 -->
+    <div class="user-section">
+      <div class="avatar">👤</div>
+      <div class="user-info">
+        <span class="nickname">美食爱好者</span>
+        <div class="badge-row">
+          <span class="user-id">ID: test_user</span>
+          <span class="badge-tag">🌱 厨房新手</span>
+          <span class="badge-tag like-badge">❤️ 伯乐初现</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 统计栏 -->
+    <div class="stats">
+      <div class="stat"><span class="stat-num">3</span><span class="stat-label">菜谱</span></div>
+      <div class="stat"><span class="stat-num">2</span><span class="stat-label">收藏</span></div>
+      <div class="stat"><span class="stat-num">12</span><span class="stat-label">获赞</span></div>
+    </div>
+
+    <div class="section-label">📋 菜谱上传徽章</div>
+    <div class="tier-grid">
+      <div class="tier-card earned"><div class="tier-emoji">🌱</div><div class="tier-name">厨房新手</div><div class="tier-req">≥1 个菜谱</div></div>
+      <div class="tier-card"><div class="tier-emoji">🍳</div><div class="tier-name">家庭厨师</div><div class="tier-req">≥5 个菜谱</div></div>
+      <div class="tier-card"><div class="tier-emoji">👨‍🍳</div><div class="tier-name">美食达人</div><div class="tier-req">≥15 个菜谱</div></div>
+      <div class="tier-card"><div class="tier-emoji">🏅</div><div class="tier-name">厨神</div><div class="tier-req">≥30 个菜谱</div></div>
+    </div>
+
+    <div class="section-label">👍 点赞徽章</div>
+    <div class="tier-grid">
+      <div class="tier-card earned"><div class="tier-emoji">❤️</div><div class="tier-name">伯乐初现</div><div class="tier-req">≥5 次点赞</div></div>
+      <div class="tier-card"><div class="tier-emoji">🔥</div><div class="tier-name">赞美之王</div><div class="tier-req">≥20 次点赞</div></div>
+      <div class="tier-card"><div class="tier-emoji">⭐</div><div class="tier-name">知心评委</div><div class="tier-req">≥50 次点赞</div></div>
+      <div class="tier-card"><div class="tier-emoji">💎</div><div class="tier-name">超级点赞官</div><div class="tier-req">≥100 次点赞</div></div>
+    </div>
+
+    <!-- 弹窗浮层 -->
+    <div class="badge-mask">
+      <div class="badge-modal">
+        <div class="badge-title">🎉 恭喜获得新徽章！</div>
+        <div class="badge-icon">🍳</div>
+        <div class="badge-name">家庭厨师</div>
+        <div class="badge-desc">已上传5个菜谱，厨艺日渐精进！</div>
+        <button class="badge-btn" onclick="this.closest('.badge-mask').style.display='none'">太棒了</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

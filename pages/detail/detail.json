@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "badge-popup": "/components/badge-popup/badge-popup"
+  }
+}

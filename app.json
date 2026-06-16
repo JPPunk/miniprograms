@@ -1,0 +1,43 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/upload/upload",
+    "pages/my/my",
+    "pages/detail/detail",
+    "pages/notifications/notifications"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ff6b35",
+    "navigationBarTitleText": "妙算小厨",
+    "navigationBarTextStyle": "white"
+  },
+  "cloud": true,
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#ff6b35",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "🏆 排行榜"
+      },
+      {
+        "pagePath": "pages/upload/upload",
+        "text": "📝 上传"
+      },
+      {
+        "pagePath": "pages/my/my",
+        "text": "👤 我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "usingComponents": {
+    "empty-state": "./components/empty-state/empty-state",
+    "loading-state": "./components/loading-state/loading-state",
+    "recipe-card": "./components/recipe-card/recipe-card"
+  }
+}

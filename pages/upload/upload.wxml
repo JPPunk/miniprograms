@@ -1,0 +1,125 @@
+<view class="container">
+  <view class="form-card">
+    <view class="form-title">{{editMode ? '✏️ 编辑菜谱' : '📝 上传菜谱'}}</view>
+
+    <view class="input-group">
+      <text class="input-label">菜谱名称 *</text>
+      <input class="input-field" placeholder="请输入菜谱名称" value="{{name}}" bindinput="onNameInput" />
+    </view>
+
+    <view class="input-group">
+      <view class="section-header">
+        <text class="input-label">🥗 食材清单 *</text>
+        <view class="add-btn" bindtap="addIngredient">
+          <text>➕ 添加食材</text>
+        </view>
+      </view>
+
+      <view class="ingredients-list">
+        <view class="ingredient-header">
+          <text class="header-cell flex-2">食材</text>
+          <text class="header-cell flex-1">数量</text>
+          <text class="header-cell flex-1">单位</text>
+          <text class="header-cell flex-1">￥花费</text>
+          <text class="header-cell flex-img">图</text>
+          <text class="header-cell flex-del"></text>
+        </view>
+        <view class="ingredient-row" wx:for="{{ingredients}}" wx:key="index">
+          <view class="ingredient-field flex-2">
+            <input class="field-input" placeholder="食材名称" value="{{item.name}}" bindinput="onIngredientName" data-index="{{index}}" />
+          </view>
+          <view class="ingredient-field flex-1">
+            <input class="field-input" type="digit" placeholder="数量" value="{{item.qty}}" bindinput="onIngredientQty" data-index="{{index}}" />
+          </view>
+          <view class="ingredient-field flex-1">
+            <picker class="unit-picker" mode="selector" range="{{units}}" range-key="name" value="{{item.unitIndex}}" bindchange="onUnitChange" data-index="{{index}}">
+              <view class="picker-value">
+                {{item.unit || '单位'}}
+              </view>
+            </picker>
+          </view>
+          <view class="ingredient-field flex-1">
+            <input class="field-input" type="digit" placeholder="￥" value="{{item.price}}" bindinput="onIngredientPrice" data-index="{{index}}" />
+          </view>
+          <view class="ingredient-img flex-img">
+            <view class="img-upload-btn" bindtap="chooseIngredientImage" data-index="{{index}}">
+              <image wx:if="{{item.image}}" src="{{item.image}}" mode="aspectFill" class="ingredient-thumb" />
+              <text wx:else class="img-placeholder">📷</text>
+            </view>
+          </view>
+          <view class="remove-btn-cell flex-del" bindtap="removeIngredient" data-index="{{index}}" wx:if="{{ingredients.length > 1}}">
+            <text class="remove-icon">✕</text>
+          </view>
+          <view class="remove-btn-cell flex-del" wx:else></view>
+        </view>
+      </view>
+
+      <view class="price-summary" wx:if="{{ingredients.length > 0}}">
+        <view class="summary-row">
+          <text class="summary-label">💰 食材总价</text>
+          <text class="summary-value">¥{{totalPrice}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="input-group">
+      <view class="section-header">
+        <text class="input-label">👨‍🍳 做法步骤 *</text>
+        <view class="add-btn" bindtap="addStep">
+          <text>➕ 添加步骤</text>
+        </view>
+      </view>
+
+      <view class="steps-list">
+        <view class="step-row" wx:for="{{steps}}" wx:key="index">
+          <view class="step-left">
+            <view class="step-number">{{index + 1}}</view>
+            <view class="step-content">
+              <textarea
+                class="step-textarea"
+                placeholder="描述这一步的做法..."
+                value="{{item.content}}"
+                bindinput="onStepContent"
+                data-index="{{index}}"
+                auto-height
+              />
+              <view class="step-img-row">
+                <view class="step-img" bindtap="chooseStepImage" data-index="{{index}}">
+                  <image wx:if="{{item.image}}" src="{{item.image}}" mode="aspectFill" class="step-thumb" />
+                  <view wx:else class="step-img-placeholder">
+                    <text>📷 添加步骤图</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="step-remove" bindtap="removeStep" data-index="{{index}}" wx:if="{{steps.length > 1}}">
+            <text class="remove-icon">✕</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="input-group">
+      <view class="section-header">
+        <text class="input-label">🍽️ 成品图片（最多3张）</text>
+      </view>
+      <view class="images-grid">
+        <view class="image-item" wx:for="{{dishImages}}" wx:key="index">
+          <image src="{{item}}" mode="aspectFill" class="dish-image" />
+          <view class="image-remove" bindtap="removeDishImage" data-index="{{index}}">✕</view>
+        </view>
+        <view class="add-image-btn" bindtap="chooseDishImage" wx:if="{{dishImages.length < 3}}">
+          <text class="add-icon">➕</text>
+          <text class="add-text">添加成品图</text>
+        </view>
+      </view>
+    </view>
+
+    <button class="btn-submit" bindtap="submitRecipe" loading="{{submitting}}">
+      {{submitting ? '保存中...' : (editMode ? '保存修改' : '发布菜谱')}}
+    </button>
+  </view>
+
+  <badge-popup show="{{badgeShow}}" badgeEmoji="{{badgeEmoji}}" badgeName="{{badgeName}}" badgeDesc="{{badgeDesc}}" bind:close="onBadgeClose" />
+</view>

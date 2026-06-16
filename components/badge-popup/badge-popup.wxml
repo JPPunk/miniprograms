@@ -1,0 +1,9 @@
+<view class="badge-mask" wx:if="{{show}}" bindtap="onClose">
+  <view class="badge-modal" catchtap="preventBubble">
+    <view class="badge-title">🎉 恭喜获得新徽章！</view>
+    <view class="badge-icon">{{badgeEmoji}}</view>
+    <view class="badge-name">{{badgeName}}</view>
+    <view class="badge-desc">{{badgeDesc}}</view>
+    <view class="badge-btn" bindtap="onClose">太棒了</view>
+  </view>
+</view>
