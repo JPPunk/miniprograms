@@ -1,11 +1,8 @@
 /**
- * 我的页面
+ * 我的页面 - 云开发适配版
  */
 
-var recipeService = require('../../services/recipeService.js');
-var historyService = require('../../services/historyService.js');
-var notificationService = require('../../services/notificationService.js');
-var badgeService = require('../../services/badgeService.js');
+var dataHelper = require('../../utils/dataHelper.js');
 
 Page({
   data: {
@@ -18,7 +15,8 @@ Page({
     notifications: [],
     unreadCount: 0,
     uploadBadge: null,
-    likeBadge: null
+    likeBadge: null,
+    loading: false
   },
 
   onLoad: function () {
@@ -31,73 +29,69 @@ Page({
 
   loadData: function () {
     var that = this;
-    var app = getApp();
-    var userInfo = (app && app.globalData && app.globalData.userInfo) || { id: 'test_user' };
+    that.setData({ loading: true });
 
-    // 每项独立加载，失败返回空数组
-    var p1;
-    try {
-      p1 = recipeService.getMyRecipes().then(function (list) {
-        return list || [];
-      });
-    } catch (e) {
-      p1 = Promise.resolve([]);
-    }
-
-    var p2;
-    try {
-      p2 = recipeService.getFavorites().then(function (list) {
-        return list || [];
-      });
-    } catch (e) {
-      p2 = Promise.resolve([]);
-    }
-
-    var p3;
-    try {
-      p3 = historyService.getAll().then(function (list) {
-        return list || [];
-      });
-    } catch (e) {
-      p3 = Promise.resolve([]);
-    }
-
-    var p4;
-    try {
-      p4 = notificationService.getAll().then(function (list) {
-        return list || [];
-      });
-    } catch (e) {
-      p4 = Promise.resolve([]);
-    }
-
-    var p5;
-    try {
-      p5 = badgeService.getUserBadges(userInfo.id).then(function (info) {
-        return info || { uploadBadge: null, likeBadge: null };
-      });
-    } catch (e) {
-      p5 = Promise.resolve({ uploadBadge: null, likeBadge: null });
-    }
-
-    Promise.all([p1, p2, p3, p4, p5]).then(function (results) {
+    // 使用 dataHelper 统一加载数据
+    Promise.all([
+      dataHelper.getMyRecipes().catch(function () { return []; }),
+      dataHelper.getFavorites().catch(function () { return []; }),
+      dataHelper.getHistory().catch(function () { return []; }),
+      dataHelper.getNotifications().catch(function () { return []; }),
+      dataHelper.getUserInfo().catch(function () { return null; })
+    ]).then(function (results) {
       var myRecipes = results[0] || [];
       var favorites = results[1] || [];
       var historyList = results[2] || [];
       var notifications = results[3] || [];
-      var badgeInfo = results[4] || {};
+      var userInfo = results[4];
 
+      // 计算总点赞数
       var totalLikes = 0;
       for (var i = 0; i < myRecipes.length; i++) {
         totalLikes += myRecipes[i].likes || 0;
       }
 
+      // 计算未读通知数
       var unreadCount = 0;
       for (var j = 0; j < notifications.length; j++) {
         if (!notifications[j].read) unreadCount++;
       }
 
+      // 提取徽章信息
+      var uploadBadge = null;
+      var likeBadge = null;
+      if (userInfo && userInfo.badges) {
+        var badges = userInfo.badges;
+        // 根据等级查找对应的徽章信息
+        var UPLOAD_TIERS = [
+          { level: 1, count: 1, name: '厨房新手', emoji: '🌱' },
+          { level: 2, count: 5, name: '家庭厨师', emoji: '🍳' },
+          { level: 3, count: 15, name: '美食达人', emoji: '👨‍🍳' },
+          { level: 4, count: 30, name: '厨神', emoji: '🏅' }
+        ];
+        var LIKE_TIERS = [
+          { level: 1, count: 5, name: '伯乐初现', emoji: '❤️' },
+          { level: 2, count: 20, name: '赞美之王', emoji: '🔥' },
+          { level: 3, count: 50, name: '知心评委', emoji: '⭐' },
+          { level: 4, count: 100, name: '超级点赞官', emoji: '💎' }
+        ];
+        
+        for (var u = 0; u < UPLOAD_TIERS.length; u++) {
+          if (UPLOAD_TIERS[u].level === badges.uploadLevel) {
+            uploadBadge = UPLOAD_TIERS[u];
+            break;
+          }
+        }
+        for (var l = 0; l < LIKE_TIERS.length; l++) {
+          if (LIKE_TIERS[l].level === badges.likeLevel) {
+            likeBadge = LIKE_TIERS[l];
+            break;
+          }
+        }
+      }
+
       that.setData({
+        userInfo: userInfo || { nickName: '美食爱好者', avatar: '' },
         stats: {
           recipeCount: myRecipes.length,
           favoriteCount: favorites.length,
@@ -106,13 +100,15 @@ Page({
         myRecipes: myRecipes,
         favorites: favorites,
         history: historyList,
-        notifications: notifications,
+        notifications: notifications.slice(0, 5), // 只显示前5条
         unreadCount: unreadCount,
-        uploadBadge: badgeInfo.uploadBadge || null,
-        likeBadge: badgeInfo.likeBadge || null
+        uploadBadge: uploadBadge,
+        likeBadge: likeBadge,
+        loading: false
       });
     }).catch(function (e) {
       console.error('[我的] 数据加载失败:', e);
+      that.setData({ loading: false });
     });
   },
 
@@ -134,14 +130,11 @@ Page({
   onNotificationTap: function (e) {
     var that = this;
     var id = e.currentTarget.dataset.id;
-    notificationService.markRead(id).then(function () {
+    dataHelper.markNotificationRead(id).then(function () {
+      that.loadData();
+    }).catch(function () {
       that.loadData();
     });
-  },
-
-  onSwitchChange: function (e) {
-    var key = e.currentTarget.dataset.key;
-    this.setData({ [key]: e.detail.value });
   },
 
   goToDetail: function (e) {
@@ -168,7 +161,7 @@ Page({
             confirmColor: '#e64340',
             success: function (modalRes) {
               if (modalRes.confirm) {
-                recipeService.delete(id).then(function () {
+                dataHelper.deleteRecipe(id).then(function () {
                   wx.showToast({ title: '已删除', icon: 'success' });
                   that.loadData();
                 }).catch(function (err) {

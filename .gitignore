@@ -47,3 +47,7 @@ cloud/**/*.log
 
 # 本地缓存
 .cache/
+
+# OpenCode 配置（包含 API Key）
+opencode.json
+opencode.jsonc

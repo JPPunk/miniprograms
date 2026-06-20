@@ -1,5 +1,4 @@
 var dataHelper = require('../../utils/dataHelper.js');
-var badgeService = require('../../services/badgeService.js');
 
 Page({
   data: {
@@ -54,31 +53,32 @@ Page({
     }).catch(function (err) {
       console.error('加载菜谱失败:', err);
       that.setData({ loading: false });
+      wx.showToast({ title: '加载失败', icon: 'none' });
     });
   },
 
   toggleLike: function() {
     var that = this;
     var recipeId = this.data.recipeId;
-    dataHelper.likeRecipe(recipeId).then(function (updatedRecipe) {
-      if (updatedRecipe) {
-        // 检查点赞徽章
-        var userId = dataHelper.getUserId ? dataHelper.getUserId() : 'test_user';
-        badgeService.checkLikeBadge(userId).then(function (badgeResult) {
-          if (badgeResult && badgeResult.upgraded && badgeResult.badge) {
-            that.setData({
-              badgeShow: true,
-              badgeEmoji: badgeResult.badge.emoji,
-              badgeName: badgeResult.badge.name,
-              badgeDesc: badgeResult.badge.desc
-            });
-          }
-        }).catch(function () {});
-
+    
+    dataHelper.likeRecipe(recipeId).then(function (result) {
+      if (result) {
+        // 检查是否获得新徽章
+        if (result.badgeUpgraded && result.newBadge) {
+          that.setData({
+            badgeShow: true,
+            badgeEmoji: result.newBadge.emoji,
+            badgeName: result.newBadge.name,
+            badgeDesc: result.newBadge.desc
+          });
+        }
+        
+        // 重新加载菜谱数据
         return that.loadRecipe(recipeId);
       }
     }).catch(function (err) {
       console.error('点赞失败:', err);
+      wx.showToast({ title: '操作失败', icon: 'none' });
     });
   },
 

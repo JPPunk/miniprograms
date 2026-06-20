@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "recipes": {
+      "read": true,
+      "write": "doc.authorId == auth.openid || get('users/' + auth.openid).role == 'admin'"
+    },
+    "users": {
+      "read": true,
+      "write": "doc._id == auth.openid || get('users/' + auth.openid).role == 'admin'"
+    },
+    "notifications": {
+      "read": "doc.userId == auth.openid",
+      "write": true
+    },
+    "history": {
+      "read": "doc.userId == auth.openid",
+      "write": "doc.userId == auth.openid"
+    }
+  }
+}

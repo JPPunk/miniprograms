@@ -9,7 +9,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ff6b35",
-    "navigationBarTitleText": "妙算小厨",
+    "navigationBarTitleText": "ChefRank",
     "navigationBarTextStyle": "white"
   },
   "cloud": true,

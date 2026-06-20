@@ -1,5 +1,4 @@
 var dataHelper = require('../../utils/dataHelper.js');
-var badgeService = require('../../services/badgeService.js');
 
 Page({
   data: {
@@ -147,6 +146,7 @@ Page({
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
       success: function (res) {
+        // TODO: 上传图片到云存储
         var ingredients = that.data.ingredients.slice();
         ingredients[index].image = res.tempFilePaths[0];
         that.setData({ ingredients: ingredients });
@@ -193,6 +193,7 @@ Page({
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
       success: function (res) {
+        // TODO: 上传图片到云存储
         var steps = that.data.steps.slice();
         steps[index].image = res.tempFilePaths[0];
         that.setData({ steps: steps });
@@ -207,6 +208,7 @@ Page({
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
       success: function (res) {
+        // TODO: 上传图片到云存储
         that.setData({
           dishImages: that.data.dishImages.concat(res.tempFilePaths)
         });
@@ -271,36 +273,28 @@ Page({
         return dataHelper.updateRecipe(merged);
       });
     } else {
-      savePromise = dataHelper.saveRecipe(recipeData).then(function () {
-        that.resetForm();
-      });
+      savePromise = dataHelper.saveRecipe(recipeData);
     }
 
     savePromise.then(function (result) {
       if (result === null) return;
+      
       var title = editMode ? '保存成功！' : '上传成功！';
       wx.showToast({ title: title, icon: 'success' });
 
-      // 上传新菜谱后检查徽章
-      if (!editMode && result && result._id) {
-        var userId = dataHelper.getUserId ? dataHelper.getUserId() : 'test_user';
-        badgeService.onRecipeUploaded(userId, result._id).then(function () {
-          return badgeService.checkUploadBadge(userId);
-        }).then(function (badgeResult) {
-          if (badgeResult && badgeResult.upgraded && badgeResult.badge) {
-            that.setData({
-              badgeShow: true,
-              badgeEmoji: badgeResult.badge.emoji,
-              badgeName: badgeResult.badge.name,
-              badgeDesc: badgeResult.badge.desc
-            });
-          }
-        }).catch(function () {});
+      // 检查是否获得新徽章
+      if (!editMode && result && result.badgeUpgraded && result.newBadge) {
+        that.setData({
+          badgeShow: true,
+          badgeEmoji: result.newBadge.emoji,
+          badgeName: result.newBadge.name,
+          badgeDesc: result.newBadge.desc
+        });
       }
 
       setTimeout(function () {
         wx.navigateBack();
-      }, 1500);
+      }, editMode || !(result && result.badgeUpgraded) ? 1500 : 2500);
     }).catch(function (err) {
       console.error('操作失败:', err);
       wx.showToast({ title: '操作失败，请重试', icon: 'none' });
@@ -310,7 +304,7 @@ Page({
   },
 
   getEmoji: function(name) {
-    var emojis = ['\uD83C\uDF56', '\uD83C\uDF73', '\uD83C\uDF57', '\uD83C\uDF56', '\uD83E\uDDC8', '\uD83E\uDD58', '\uD83C\uDF72', '\uD83E\uDD57', '\uD83C\uDF5C', '\uD83C\uDF5D', '\uD83E\uDD5F', '\uD83C\uDF55'];
+    var emojis = ['🍖', '🍳', '🍗', '🍖', '🧈', '🥘', '🍲', '🥗', '🍜', '🍝', '🥟', '🍕'];
     var hash = 0;
     for (var i = 0; i < name.length; i++) {
       hash = ((hash << 5) - hash) + name.charCodeAt(i);

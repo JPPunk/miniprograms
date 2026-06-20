@@ -1,8 +1,10 @@
-# 🍳 妙算小厨
+# 🍳 ChefRank（妙算小厨）
 
 > 一个帮你记录菜谱成本、发现高性价比美食的微信小程序。
 
-> **妙算小厨——你的家常菜精打细算助手。**
+> **ChefRank —— 你的家常菜精打细算助手。**
+> 
+> 中文名「妙算小厨」寓意：巧妙计算，小厨房也能做出大美味。
 >
 > 🏆 四大榜单，一眼看出好菜：点赞最多、成本最低、性价比最高、最新上传，帮你快速发现值得做的菜。
 >
@@ -12,7 +14,7 @@
 >
 > 🔥 性价比排行：点赞数÷成本，找出大家公认又好吃又便宜的菜，做饭不再踩雷。
 >
-> 无论你是精打细算的上班族，还是想给家人做顿好饭的厨房新手，妙算小厨都能帮你吃得实惠、做得明白。
+> 无论你是精打细算的上班族，还是想给家人做顿好饭的厨房新手，ChefRank 都能帮你吃得实惠、做得明白。
 
 [![微信小程序](https://img.shields.io/badge/平台-微信小程序-brightgreen)](https://developers.weixin.qq.com/miniprogram/dev/framework/)
 [![License](https://img.shields.io/badge/许可证-MIT-blue)](LICENSE)
@@ -159,7 +161,7 @@ Recipe {
 ```bash
 # 克隆仓库
 git clone https://github.com/JPPunk/miniprograms.git
-cd miniprograms
+cd miniprograms/AI_Projects/miniprogram
 
 # 安装依赖
 npm install
