@@ -1,21 +1,48 @@
-# 妙算小厨 - 云开发完整部署方案
+# ChefRank（妙算小厨）- 云开发完整部署方案
 
-> 环境 ID: `cloudbase-d7g0ms7t6569c7e0e`
+> **项目**: ChefRank（妙算小厨）
+> **AppID**: `wx8a8bdd79631a02a0`
+> **环境 ID**: `cloudbase-d7g0ms7t6569c7e0e`
+> **仓库**: https://github.com/JPPunk/miniprograms
 
 ---
 
 ## 一、准备工作
 
-### 1. 确认环境信息
+### 1. 环境要求
 
-打开微信开发者工具，确认：
-- ✅ 已登录微信开发者工具
-- ✅ 小程序 AppID: `wxc29e2adc86e681d6`
-- ✅ 云开发环境: `cloudbase-d7g0ms7t6569c7e0e`
+- ✅ 微信开发者工具（最新版）
+- ✅ 小程序账号（已注册，AppID: `wx8a8bdd79631a02a0`）
+- ✅ 已开通云开发（环境 ID: `cloudbase-d7g0ms7t6569c7e0e`）
+- ✅ Node.js >= 14（可选，用于本地调试）
 
-### 2. 打开云开发控制台
+### 2. 克隆代码
 
-点击开发者工具工具栏的 **"云开发"** 按钮，打开控制台。
+```bash
+git clone git@github.com:JPPunk/miniprograms.git
+cd miniprograms/AI_Projects/miniprogram
+```
+
+### 3. 确认配置
+
+检查以下文件配置是否正确：
+
+**project.config.json**:
+```json
+{
+  "projectname": "ChefRank",
+  "appid": "wx8a8bdd79631a02a0",
+  "cloudfunctionRoot": "cloud/"
+}
+```
+
+**app.js**:
+```javascript
+wx.cloud.init({
+  env: 'cloudbase-d7g0ms7t6569c7e0e',
+  traceUser: true
+});
+```
 
 ---
 

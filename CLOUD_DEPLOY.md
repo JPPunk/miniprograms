@@ -1,11 +1,57 @@
-# 云开发部署指南
+# ChefRank（妙算小厨）- 云开发部署指南
 
-## 环境信息
+## 项目信息
 
-- **环境名称**: cloudbase
-- **环境 ID**: cloudbase-d7g0ms7t6569c7e0e
+- **项目名称**: ChefRank（妙算小厨）
+- **AppID**: `wx8a8bdd79631a02a0`
+- **环境 ID**: `cloudbase-d7g0ms7t6569c7e0e`
+- **仓库**: https://github.com/JPPunk/miniprograms
 
-## 云函数列表
+## 快速开始
+
+### 1. 导入项目
+
+1. 打开微信开发者工具
+2. 选择 **"导入项目"**
+3. 项目目录: `/path/to/miniprograms/AI_Projects/miniprogram`
+4. AppID: `wx8a8bdd79631a02a0`
+5. 后端服务: **微信云开发**
+
+### 2. 开通云开发
+
+1. 点击工具栏 **"云开发"** 按钮
+2. 选择 **"开通"**
+3. 记录环境 ID: `cloudbase-d7g0ms7t6569c7e0e`
+4. 确保 `app.js` 中已配置正确环境 ID
+
+### 3. 部署云函数
+
+在微信开发者工具中：
+1. 展开 `cloud/functions/` 目录
+2. 依次右键以下文件夹，选择 **"创建并部署：云端安装依赖"**:
+   - `recipes/` - 登录验证
+   - `users/` - 用户管理
+   - `rankings/` - 排行榜
+   - `likes/` - 点赞功能
+   - `recipeManage/` - 菜谱管理
+
+### 4. 创建数据库
+
+在云开发控制台 → 数据库：
+1. 创建集合: `recipes`
+2. 创建集合: `users`
+3. （可选）创建集合: `notifications`
+4. （可选）创建集合: `history`
+
+### 5. 设置权限
+
+在数据库集合权限设置中，选择 **"自定义安全规则"**，导入 `cloud/database/rules.json`。
+
+### 6. 运行项目
+
+点击开发者工具 **"编译"**，小程序将自动初始化并运行。
+
+---
 
 | 云函数 | 功能 | 文件 |
 |-------|------|------|
