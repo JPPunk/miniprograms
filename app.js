@@ -18,7 +18,7 @@ App({
     if (wx.cloud) {
       try {
         wx.cloud.init({
-          env: 'prod-xxx',
+          env: 'cloudbase-d7g0ms7t6569c7e0e',
           traceUser: true
         });
         // 验证云开发是否真正可用
